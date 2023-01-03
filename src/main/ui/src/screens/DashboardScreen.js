@@ -2,11 +2,14 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-function DashboardScreen(props) {
+export default function DashboardScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.row}>
-        <TouchableOpacity style={styles.dashboardBtn}>
+        <TouchableOpacity
+          style={styles.dashboardBtn}
+          onPress={() => navigation.navigate("WoundCaptureScreen")}
+        >
           <SafeAreaView style={styles.dashboardOption}>
             <FeatherIcon style={styles.btnIcon} name="camera" size={60} />
             <Text style={styles.btnText}>Take Photo</Text>
@@ -70,5 +73,3 @@ const styles = StyleSheet.create({
     color: "black",
   },
 });
-
-export default DashboardScreen;
