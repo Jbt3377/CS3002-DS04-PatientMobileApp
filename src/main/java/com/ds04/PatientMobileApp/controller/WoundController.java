@@ -15,13 +15,13 @@ import java.util.List;
 public class WoundController {
 
     @Autowired
-    WoundService woundService;
+    private WoundService woundService;
 
     @GetMapping("/")
-    public ResponseEntity<?> createWound() {
+    public String createWound() {
 
         List<Wound> resource = woundService.getWounds();
-        return ResponseEntity.ok(resource);
+        return "hello world";
     }
 
 }
