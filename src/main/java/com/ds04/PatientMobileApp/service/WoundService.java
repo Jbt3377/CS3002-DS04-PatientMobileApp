@@ -2,6 +2,7 @@ package com.ds04.PatientMobileApp.service;
 
 import com.ds04.PatientMobileApp.entity.Wound;
 import com.ds04.PatientMobileApp.repository.WoundRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,21 +10,60 @@ import java.util.List;
 @Component
 public class WoundService {
 
-    private WoundRepository woundRepository;
+    @Autowired
+    private final WoundRepository woundRepository;
 
     public WoundService(WoundRepository woundRepository) {
         this.woundRepository = woundRepository;
     }
 
-    // TODO: DS04-12 Setup Data Storage method and connect with Repo Pattern
+    public String createWound(Wound newWound) {
+        try {
+            // Check if WoundId provided
+            if(newWound.getWoundId() == null){
+                newWound.setWoundId();
+            }
 
-    public List<Wound> getWounds(){
-        //return woundRepository.findAll();
-        return null;
+            return woundRepository.create(newWound);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
     }
 
-    public Wound saveWound(Wound wound) {
-        //return woundRepository.save(wound);
-        return null;
+    public Wound getWound(String woundId){
+        try {
+            return woundRepository.findById(woundId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+
+    public List<Wound> findWounds(String patientId){
+        try {
+            return woundRepository.find(patientId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+
+    public String updateWound(Wound update){
+        try {
+            return woundRepository.update(update);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+
+    public String deleteWound(String woundId){
+        try {
+            return woundRepository.delete(woundId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
     }
 }
