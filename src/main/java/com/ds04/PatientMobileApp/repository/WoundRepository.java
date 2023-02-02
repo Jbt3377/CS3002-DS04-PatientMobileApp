@@ -1,6 +1,7 @@
 package com.ds04.PatientMobileApp.repository;
 
 import com.ds04.PatientMobileApp.entity.Wound;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Repository
@@ -17,7 +19,7 @@ public class WoundRepository {
 
     public String create(Wound wound) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId().toString()).set(wound);
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId()).set(wound);
         return future.get().getUpdateTime().toString();
     }
 
@@ -45,9 +47,12 @@ public class WoundRepository {
         return results;
     }
 
-    public String update(Wound wound) throws ExecutionException, InterruptedException {
+    public String update(String woundId, Wound wound) throws ExecutionException, InterruptedException {
+        ObjectMapper oMapper = new ObjectMapper();
+        Map<String, Object> map = oMapper.convertValue(wound, Map.class);
+
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId().toString()).set(wound, SetOptions.merge());
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundId).update(map);
         return future.get().getUpdateTime().toString();
     }
 

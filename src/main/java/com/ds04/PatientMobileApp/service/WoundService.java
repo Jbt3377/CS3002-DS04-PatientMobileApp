@@ -49,9 +49,9 @@ public class WoundService {
         }
     }
 
-    public String updateWound(Wound update){
+    public String updateWound(String woundId, Wound update){
         try {
-            return woundRepository.update(update);
+            return woundRepository.update(woundId, update);
         } catch (Exception e) {
             e.printStackTrace();
             return null; // TODO: Implement Exception Handling

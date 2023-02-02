@@ -12,7 +12,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 public class Wound {
 
     @DocumentId
-    @Schema(accessMode = READ_ONLY)
     private String WoundId;
     private String PatientId;
     private String WoundType;

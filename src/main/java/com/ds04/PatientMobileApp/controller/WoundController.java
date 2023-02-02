@@ -29,9 +29,9 @@ public class WoundController {
         return woundService.findWounds(patientId);
     }
 
-    @PutMapping("/update")
-    public String updateWound(@RequestBody Wound update) {
-        return woundService.updateWound(update);
+    @PutMapping("/update/{woundId}")
+    public String updateWound(@PathVariable String woundId, @RequestBody Wound update) {
+        return woundService.updateWound(woundId, update);
     }
 
     @DeleteMapping("/delete/{woundId}")
