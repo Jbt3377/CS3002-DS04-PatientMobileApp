@@ -16,7 +16,10 @@ export default function DashboardScreen({ navigation }) {
           </SafeAreaView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dashboardBtn}>
+        <TouchableOpacity
+          style={styles.dashboardBtn}
+          onPress={() => navigation.navigate("WoundSelectScreen")}
+        >
           <SafeAreaView style={styles.dashboardOption}>
             <FeatherIcon style={styles.btnIcon} name="list" size={60} />
             <Text style={styles.btnText}>See Records</Text>
@@ -25,14 +28,20 @@ export default function DashboardScreen({ navigation }) {
       </SafeAreaView>
 
       <SafeAreaView style={styles.row}>
-        <TouchableOpacity style={styles.dashboardBtn}>
+        <TouchableOpacity
+          style={styles.dashboardBtn}
+          onPress={() => navigation.navigate("ProfileScreen")}
+        >
           <SafeAreaView style={styles.dashboardOption}>
             <FeatherIcon style={styles.btnIcon} name="user" size={60} />
             <Text style={styles.btnText}>Edit Profile</Text>
           </SafeAreaView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dashboardBtn}>
+        <TouchableOpacity
+          style={styles.dashboardBtn}
+          onPress={() => navigation.navigate("SettingsScreen")}
+        >
           <SafeAreaView style={styles.dashboardOption}>
             <FeatherIcon style={styles.btnIcon} name="tool" size={60} />
             <Text style={styles.btnText}>Settings</Text>
@@ -55,7 +64,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   dashboardBtn: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "white",
     width: 150,
     height: 150,
     borderRadius: 20,
