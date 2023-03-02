@@ -10,12 +10,14 @@ import React, { useState } from "react";
 
 import { TextInput } from "react-native-paper";
 
+const globalStyle = require("../../Style");
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyle.container}>
       <SafeAreaView style={styles.logoArea}>
         <Image
           style={styles.image}
@@ -62,11 +64,6 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#99ccff",
-    justifyContent: "center",
-  },
   image: {
     width: 150,
     height: 150,

@@ -9,13 +9,19 @@ import SettingsScreen from "./src/screens/SettingsScreen";
 import WoundCaptureScreen from "./src/screens/WoundCaptureScreen";
 import WoundSelectScreen from "./src/screens/WoundSelectScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useTheme } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   console.log("App executed");
+
+  const theme = {
+    roundness: 10,
+  };
+
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -34,30 +40,30 @@ export default function App() {
           <Stack.Screen
             name="WoundCaptureScreen"
             component={WoundCaptureScreen}
-            options={{ title: "WoundCaptureScreen" }}
-          />
-          <Stack.Screen
-            name="WoundSelectScreen"
-            component={WoundSelectScreen}
             options={{
-              title: "WoundSelectScreen",
+              title: "WoundCaptureScreen",
               headerShown: false,
             }}
           />
           <Stack.Screen
+            name="WoundSelectScreen"
+            component={WoundSelectScreen}
+            options={{ title: "Select Wound" }}
+          />
+          <Stack.Screen
             name="RegisterWoundScreen"
             component={RegisterWoundScreen}
-            options={{ title: "RegisterWoundScreen" }}
+            options={{ title: "Register Wound" }}
           />
           <Stack.Screen
             name="ProfileScreen"
             component={ProfileScreen}
-            options={{ title: "ProfileScreen" }}
+            options={{ title: "Edit Profile" }}
           />
           <Stack.Screen
             name="SettingsScreen"
             component={SettingsScreen}
-            options={{ title: "SettingsScreen" }}
+            options={{ title: "Settings" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

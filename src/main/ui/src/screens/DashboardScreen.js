@@ -2,9 +2,11 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import FeatherIcon from "react-native-vector-icons/Feather";
 
+const globalStyle = require("../../Style");
+
 export default function DashboardScreen({ navigation }) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyle.container}>
       <SafeAreaView style={styles.row}>
         <TouchableOpacity
           style={styles.dashboardBtn}
@@ -53,11 +55,6 @@ export default function DashboardScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#99ccff",
-    justifyContent: "center",
-  },
   row: {
     justifyContent: "space-evenly",
     flexDirection: "row",

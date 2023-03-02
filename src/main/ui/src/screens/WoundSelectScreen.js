@@ -2,9 +2,11 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
+const globalStyle = require("../../Style");
+
 export default function WoundSelectScreen({ navigation }) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyle.container}>
       <SafeAreaView style={styles.addWoundArea}>
         <TouchableOpacity
           style={styles.addWoundBtn}
@@ -37,11 +39,6 @@ export default function WoundSelectScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#99ccff",
-  },
   addWoundArea: {
     flex: 1,
     alignItems: "center",

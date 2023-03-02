@@ -4,6 +4,8 @@ import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+const globalStyle = require("../../Style");
+
 export default function ProfileScreen({ navigation }) {
   const [firstname, setFirstname] = useState("");
   const [surname, setSurname] = useState("");
@@ -12,7 +14,7 @@ export default function ProfileScreen({ navigation }) {
   const [address, setAddress] = useState("");
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <KeyboardAwareScrollView style={globalStyle.scrollableContainer}>
       <SafeAreaView style={styles.avatarArea}>
         <Avatar.Image
           size={100}
@@ -67,10 +69,6 @@ export default function ProfileScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#99ccff",
-  },
   avatarArea: {
     flexDirection: "column",
     padding: 30,
