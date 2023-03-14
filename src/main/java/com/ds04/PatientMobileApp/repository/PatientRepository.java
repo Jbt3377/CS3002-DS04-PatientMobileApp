@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 @Repository
 public class PatientRepository {
 
+    private static final String COLLECTION_NAME = "patients";
+
     public String create(Patient patient) throws ExecutionException, InterruptedException {
 //        Firestore db = FirestoreClient.getFirestore();
 //        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId()).set(wound);
@@ -24,16 +26,27 @@ public class PatientRepository {
     }
 
     public Patient findById(String patientId) throws ExecutionException, InterruptedException {
-//        Firestore db = FirestoreClient.getFirestore();
-//        ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(woundId).get();
-//        DocumentSnapshot document = future.get();
-//
-//        if(document.exists()){
-//            return document.toObject(Wound.class);
-//        }else{
-//            return null;
-//        }
-        return null;
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(patientId).get();
+        DocumentSnapshot document = future.get();
+
+        if(document.exists()){
+            return document.toObject(Patient.class);
+        }else{
+            return null;
+        }
+    }
+
+    public Patient findByUserId(String patientId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", patientId).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if(!documents.isEmpty()){
+            return documents.get(0).toObject(Patient.class);
+        }else{
+            return null;
+        }
     }
 
     public String update(String patientId, Patient patient) throws ExecutionException, InterruptedException {

@@ -1,14 +1,13 @@
-import { Button, TextInput } from "react-native-paper";
+import { IconButton, TextInput } from "react-native-paper";
 import {
-  Pressable,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  Touchable,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -34,6 +33,13 @@ export default function RegisterWoundScreen({ navigation }) {
     },
   ]);
 
+  const onWoundTypeOpen = useCallback(() => {
+    Keyboard.dismiss();
+    setInjuryMechanismOpen(false);
+    setInjuryDatePickerVisible(false);
+    setInjuryDrugOrAlcoholInvolvementOpen(false);
+  }, []);
+
   // Wound Location on Body
   const [woundLocationOnBody, setWoundLocationOnBody] = useState("");
 
@@ -44,11 +50,14 @@ export default function RegisterWoundScreen({ navigation }) {
     React.useState(false);
 
   function showInjuryDatePicker() {
+    Keyboard.dismiss();
+    setWoundTypeOpen(false);
+    setInjuryMechanismOpen(false);
+    setInjuryDrugOrAlcoholInvolvementOpen(false);
     setInjuryDatePickerVisible(true);
   }
 
   function onDateSelected(event, value) {
-    setInjuryDate(value);
     setInjuryDatePickerVisible(false);
 
     const tempDate = new Date(value);
@@ -65,12 +74,84 @@ export default function RegisterWoundScreen({ navigation }) {
 
   // Place of Injury
   const [placeOfInjury, setPlaceOfInjury] = useState("");
-  // const [injuryIntent, setInjuryIntent] = useState("");
+
+  // Injury Intent
+  const [injuryIntent, setInjuryIntent] = useState("");
+
+  // Injury Activity Status
+  const [injuryActivityStatus, setInjuryActivityStatus] = useState("");
+
+  // Injury Activity Type
+  const [injuryActivityType, setInjuryActivityType] = useState("");
+
+  // Injury Mechanism
+  const [injuryMechanismOpen, setInjuryMechanismOpen] = useState(false);
+  const [injuryMechanism, setInjuryMechanism] = useState([]);
+  const [injuryMechanismOptions, setInjuryMechanismOptions] = useState([
+    { label: "Blunt Force Trauma", value: "blunt force trauma" },
+    { label: "Penetrating Trauma", value: "penetrating trauma" },
+    { label: "Thermal Injury", value: "thermal injury" },
+    { label: "Chemical Injury", value: "chemical injury" },
+    { label: "Radiation Injury", value: "radiation injury" },
+    { label: "Electrical Injury", value: "electrical injury" },
+    { label: "Overuse Injury", value: "overuse injury" },
+  ]);
+
+  const onInjuryMechanismOpen = useCallback(() => {
+    Keyboard.dismiss();
+    setWoundTypeOpen(false);
+    setInjuryDatePickerVisible(false);
+    setInjuryDrugOrAlcoholInvolvementOpen(false);
+  }, []);
+
+  // Injury Alcohol or Drug Involvement
+  const [
+    injuryDrugOrAlcoholInvolvementOpen,
+    setInjuryDrugOrAlcoholInvolvementOpen,
+  ] = useState(false);
+  const [injuryDrugOrAlcoholInvolvement, setInjuryDrugOrAlcoholInvolvement] =
+    useState();
+  const [
+    injuryDrugOrAlcoholInvolvementOptions,
+    setInjuryDrugOrAlcoholInvolvementOptions,
+  ] = useState([
+    { label: "Yes", value: true },
+    { label: "No", value: false },
+  ]);
+
+  const onInjuryAlcoholOrDrugInvolvementOpen = useCallback(() => {
+    Keyboard.dismiss();
+    setWoundTypeOpen(false);
+    setInjuryDatePickerVisible(false);
+    setInjuryMechanismOpen(false);
+  }, []);
+
+  const onTextInputPress = useCallback(() => {
+    setWoundTypeOpen(false);
+    setInjuryDatePickerVisible(false);
+    setInjuryMechanismOpen(false);
+    setInjuryDrugOrAlcoholInvolvementOpen(false);
+  }, []);
+
+  // Assault Location Description
+  const [asaultLocationDescription, setAsaultLocationDescription] =
+    useState("");
+  const [showAsaultLocationDescription, setShowAsaultLocationDescription] =
+    useState(false);
+
+  function onInjuryAlcoholOrDrugInvolvementChange() {
+    if (injuryDrugOrAlcoholInvolvement) {
+      setShowAsaultLocationDescription(true);
+    } else {
+      setShowAsaultLocationDescription(false);
+    }
+  }
 
   return (
     <ScrollView
       style={globalStyle.scrollableContainer}
       keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true}
     >
       <SafeAreaView style={styles.container}>
         <SafeAreaView style={styles.inputContainer}>
@@ -83,6 +164,8 @@ export default function RegisterWoundScreen({ navigation }) {
             setOpen={setWoundTypeOpen}
             setValue={setWoundType}
             setItems={setWoundTypeList}
+            listMode="SCROLLVIEW"
+            onOpen={onWoundTypeOpen}
           />
         </SafeAreaView>
 
@@ -97,6 +180,7 @@ export default function RegisterWoundScreen({ navigation }) {
             onChangeText={(woundLocationOnBody) =>
               setWoundLocationOnBody(woundLocationOnBody)
             }
+            onPressIn={onTextInputPress}
           />
         </SafeAreaView>
 
@@ -140,6 +224,116 @@ export default function RegisterWoundScreen({ navigation }) {
             value={placeOfInjury}
             mode="outlined"
             onChangeText={(placeOfInjury) => setPlaceOfInjury(placeOfInjury)}
+            onPressIn={onTextInputPress}
+          />
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.inputContainer}>
+          <Text style={styles.textComponentText}>Injury Intent</Text>
+          <TextInput
+            style={styles.textComponent}
+            outlineColor={"black"}
+            placeholder={"E.g. Non-intentional, Self-harm"}
+            value={injuryIntent}
+            mode="outlined"
+            onChangeText={(injuryIntent) => setInjuryIntent(injuryIntent)}
+            onPressIn={onTextInputPress}
+          />
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.inputContainer}>
+          <Text style={styles.textComponentText}>Injury Activity Status</Text>
+          <TextInput
+            style={styles.textComponent}
+            outlineColor={"black"}
+            placeholder={"E.g. Recreational Exercise"}
+            value={injuryActivityStatus}
+            mode="outlined"
+            onChangeText={(injuryActivityStatus) =>
+              setInjuryActivityStatus(injuryActivityStatus)
+            }
+            onPressIn={onTextInputPress}
+          />
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.inputContainer}>
+          <Text style={styles.textComponentText}>Injury Activity Type</Text>
+          <TextInput
+            style={styles.textComponent}
+            outlineColor={"black"}
+            placeholder={"E.g. Ascending Stairs"}
+            value={injuryActivityType}
+            mode="outlined"
+            onChangeText={(injuryActivityType) =>
+              setInjuryActivityType(injuryActivityType)
+            }
+            onPressIn={onTextInputPress}
+          />
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.inputContainer}>
+          <Text style={styles.dropDownComponentText}>Injury Mechanism</Text>
+          <DropDownPicker
+            style={styles.dropDownComponent}
+            multiple={true}
+            mode="BADGE"
+            open={injuryMechanismOpen}
+            value={injuryMechanism}
+            items={injuryMechanismOptions}
+            setOpen={setInjuryMechanismOpen}
+            setValue={setInjuryMechanism}
+            setItems={setInjuryMechanismOptions}
+            listMode="SCROLLVIEW"
+            onOpen={onInjuryMechanismOpen}
+          />
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.inputContainer}>
+          <Text style={styles.dropDownComponentText}>
+            Injury Alcohol or Drug Involvement
+          </Text>
+          <DropDownPicker
+            style={styles.dropDownComponent}
+            open={injuryDrugOrAlcoholInvolvementOpen}
+            value={injuryDrugOrAlcoholInvolvement}
+            items={injuryDrugOrAlcoholInvolvementOptions}
+            setOpen={setInjuryDrugOrAlcoholInvolvementOpen}
+            setValue={setInjuryDrugOrAlcoholInvolvement}
+            setItems={setInjuryDrugOrAlcoholInvolvementOptions}
+            listMode="SCROLLVIEW"
+            onOpen={onInjuryAlcoholOrDrugInvolvementOpen}
+            dropDownDirection="BOTTOM"
+            onChangeValue={onInjuryAlcoholOrDrugInvolvementChange}
+          />
+        </SafeAreaView>
+
+        {showAsaultLocationDescription && (
+          <SafeAreaView style={styles.inputContainer}>
+            <Text style={styles.textComponentText}>
+              Assault Location Description
+            </Text>
+            <TextInput
+              style={styles.textComponent}
+              outlineColor={"black"}
+              placeholder={"Provide further details..."}
+              value={asaultLocationDescription}
+              mode="outlined"
+              onChangeText={(asaultLocationDescription) =>
+                setShowAsaultLocationDescription(asaultLocationDescription)
+              }
+              onPressIn={onTextInputPress}
+            />
+          </SafeAreaView>
+        )}
+
+        <SafeAreaView style={styles.nextBtnContainer}>
+          <IconButton
+            icon="arrow-right"
+            mode="contained-tonal"
+            iconColor={"green"}
+            containerColor={"darkseagreen"}
+            size={40}
+            onPress={() => console.log("Pressed")}
           />
         </SafeAreaView>
       </SafeAreaView>
@@ -189,5 +383,8 @@ const styles = StyleSheet.create({
     width: 320,
     height: 260,
     display: "flex",
+  },
+  nextBtnContainer: {
+    alignItems: "flex-end",
   },
 });

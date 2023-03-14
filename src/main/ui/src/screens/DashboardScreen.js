@@ -1,12 +1,30 @@
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import FeatherIcon from "react-native-vector-icons/Feather";
+import { auth } from "../../Firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const globalStyle = require("../../Style");
 
 export default function DashboardScreen({ navigation }) {
+  const [displayName, setDisplayName] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      const user = auth.currentUser;
+      if (user !== null) {
+        setDisplayName(user.displayName);
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <SafeAreaView style={globalStyle.container}>
+      <SafeAreaView style={styles.welcomeTextContainer}>
+        <Text style={styles.welcomeText}>Hello, {displayName}!</Text>
+      </SafeAreaView>
       <SafeAreaView style={styles.row}>
         <TouchableOpacity
           style={styles.dashboardBtn}
@@ -77,5 +95,11 @@ const styles = StyleSheet.create({
   btnText: {
     fontWeight: "bold",
     color: "black",
+  },
+  welcomeTextContainer: {
+    alignItems: "center",
+  },
+  welcomeText: {
+    color: "white",
   },
 });

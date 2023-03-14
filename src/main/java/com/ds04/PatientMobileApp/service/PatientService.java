@@ -38,6 +38,15 @@ public class PatientService {
         }
     }
 
+    public Patient getPatientByUserId(String userId){
+        try {
+            return patientRepository.findByUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+
     public String updatePatient(String patientId, Patient update){
         try {
             return patientRepository.update(patientId, update);

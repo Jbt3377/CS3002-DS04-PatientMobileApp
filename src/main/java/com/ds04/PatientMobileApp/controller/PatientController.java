@@ -17,9 +17,14 @@ public class PatientController {
         return patientService.createPatient(newPatient);
     }
 
-    @GetMapping("/get/{patientId}")
+    @GetMapping("/getPatientByPatientId/{patientId}")
     public Patient getPatient(@PathVariable String patientId) {
         return patientService.getPatient(patientId);
+    }
+
+    @GetMapping("/getPatientByUserId/{userId}")
+    public Patient getPatientByUserId(@PathVariable String userId) {
+        return patientService.getPatientByUserId(userId);
     }
 
     @PutMapping("/update/{patientId}")

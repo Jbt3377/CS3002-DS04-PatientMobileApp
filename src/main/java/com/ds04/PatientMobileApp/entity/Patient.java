@@ -9,14 +9,12 @@ public class Patient {
 
     @DocumentId
     private String patientId;
-    private String forename;
+    private String uid;
+    private String firstname;
     private String surname;
-    private Date dateOfBirth;
+    private Date dob;
     private String gender;
-    private String address;         // TODO: Expand to own class
-    private String emailAddress;    // TODO: Expand to own class
-    private String username;
-    private String password;
+    private String homeAddress;         // TODO: Expand to own class
 
     public String getPatientId() {
         return patientId;
@@ -26,12 +24,20 @@ public class Patient {
         this.patientId = UUID.randomUUID().toString();
     }
 
-    public String getForename() {
-        return forename;
+    public String getUid() {
+        return uid;
     }
 
-    public void setForename(String forename) {
-        this.forename = forename;
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     public String getSurname() {
@@ -42,12 +48,12 @@ public class Patient {
         this.surname = surname;
     }
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
+    public Date getDob() {
+        return dob;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
     public String getGender() {
@@ -58,35 +64,11 @@ public class Patient {
         this.gender = gender;
     }
 
-    public String getAddress() {
-        return address;
+    public String getHomeAddress() {
+        return homeAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHomeAddress(String homeAddress) {
+        this.homeAddress = homeAddress;
     }
 }
