@@ -11,8 +11,8 @@ import { TouchableOpacity, View } from "react-native";
 const DialogWithRadioButtons = ({
   dialogOptions,
   onSelectValue,
-  defaultValue,
-  isActivatable,
+  currentValue,
+  isEditMode,
 }) => {
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
@@ -84,7 +84,7 @@ const DialogWithRadioButtons = ({
    * Method decides if Dropdown Icon should be displayed or not
    */
   const ShowTextInputIcon = () => {
-    if (isActivatable) {
+    if (isEditMode) {
       return <TextInput.Icon icon="chevron-down" />;
     } else {
       return null;
@@ -92,17 +92,24 @@ const DialogWithRadioButtons = ({
   };
 
   /**
-   * useEffect that sets the pre-selected option of the dialog box
+   * useEffect that sets the pre-selected/rendered option of the dialog box
    */
   useEffect(() => {
-    if (defaultValue && selectedValue === "") {
-      setSelectedValue(defaultValue);
+    if (isEditMode) {
+      if (currentValue && selectedValue === "") {
+        // If in Edit Mode AND there is an initial value AND the modal just opened,
+        // set the selected value of the Modal to the current user prop
+        setSelectedValue(currentValue);
+      }
+    } else {
+      // Otherwise, reflect the current state of the prop in the Text Input
+      setSelectedValue(currentValue);
     }
   });
 
   return (
     <View>
-      <TouchableOpacity onPress={showDialog} disabled={!isActivatable}>
+      <TouchableOpacity onPress={showDialog} disabled={!isEditMode}>
         <TextInput
           outlineColor={"black"}
           value={selectedValue}
