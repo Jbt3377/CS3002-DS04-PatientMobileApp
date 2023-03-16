@@ -12,7 +12,7 @@ const DialogWithRadioButtons = ({
   dialogOptions,
   onSelectValue,
   defaultValue,
-  isActivatable
+  isActivatable,
 }) => {
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
@@ -29,17 +29,23 @@ const DialogWithRadioButtons = ({
     hideDialog();
   };
 
+  /**
+   * Method returns Gender Options
+   */
   const genderOptions = () => {
     return (
       <View>
-        <RadioButton.Item label="Male" value="male" />
-        <RadioButton.Item label="Female" value="female" />
-        <RadioButton.Item label="Nonbinary" value="nonbinary" />
-        <RadioButton.Item label="Other" value="other" />
+        <RadioButton.Item label="Male" value="Male" />
+        <RadioButton.Item label="Female" value="Female" />
+        <RadioButton.Item label="Nonbinary" value="Nonbinary" />
+        <RadioButton.Item label="Other" value="Other" />
       </View>
     );
   };
 
+  /**
+   * Method returns Wound Type Options
+   */
   const woundTypeOptions = () => {
     return (
       <View>
@@ -61,6 +67,9 @@ const DialogWithRadioButtons = ({
     );
   };
 
+  /**
+   * Method returns the radiobutton options depending on the passed in context: dialogOptions
+   */
   const Options = () => {
     if (dialogOptions === "genders") {
       return genderOptions();
@@ -71,24 +80,35 @@ const DialogWithRadioButtons = ({
     }
   };
 
-  useEffect(() => {
-    if(defaultValue && selectedValue === ""){
-        setSelectedValue(defaultValue);
+  /**
+   * Method decides if Dropdown Icon should be displayed or not
+   */
+  const ShowTextInputIcon = () => {
+    if (isActivatable) {
+      return <TextInput.Icon icon="chevron-down" />;
+    } else {
+      return null;
     }
-  })
+  };
+
+  /**
+   * useEffect that sets the pre-selected option of the dialog box
+   */
+  useEffect(() => {
+    if (defaultValue && selectedValue === "") {
+      setSelectedValue(defaultValue);
+    }
+  });
 
   return (
     <View>
-      <TouchableOpacity
-        onPress={showDialog}
-        disabled={!isActivatable}
-      >
+      <TouchableOpacity onPress={showDialog} disabled={!isActivatable}>
         <TextInput
           outlineColor={"black"}
           value={selectedValue}
           mode="outlined"
           editable={false}
-          right={<TextInput.Icon icon="chevron-down" />}
+          right={ShowTextInputIcon()}
         />
       </TouchableOpacity>
       <Portal>

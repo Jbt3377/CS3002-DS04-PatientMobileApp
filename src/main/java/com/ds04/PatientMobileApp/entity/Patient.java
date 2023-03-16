@@ -3,6 +3,7 @@ package com.ds04.PatientMobileApp.entity;
 import com.google.cloud.firestore.annotation.DocumentId;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Patient {
@@ -14,7 +15,7 @@ public class Patient {
     private String surname;
     private Date dob;
     private String gender;
-    private String homeAddress;         // TODO: Expand to own class
+    private String homeAddress;
 
     public String getPatientId() {
         return patientId;
@@ -71,4 +72,17 @@ public class Patient {
     public void setHomeAddress(String homeAddress) {
         this.homeAddress = homeAddress;
     }
+
+    public HashMap<String, Object> convertToMap() {
+        HashMap<String, Object> docData = new HashMap<>();
+
+        docData.put("uid", this.uid);
+        docData.put("firstname", this.firstname);
+        docData.put("surname", this.surname);
+        docData.put("dob", this.dob);
+        docData.put("gender", this.gender);
+        docData.put("homeAddress", this.homeAddress);
+        return docData;
+    }
+
 }

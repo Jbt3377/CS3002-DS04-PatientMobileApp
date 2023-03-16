@@ -16,12 +16,14 @@ import { Dropdown } from "react-native-element-dropdown";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
+import User from "../models/User";
 import { auth } from "../../Firebase";
 
 const globalStyle = require("../../Style");
 
 export default function ProfileScreen({ navigation }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [patientId, setPatientId] = useState();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -34,6 +36,29 @@ export default function ProfileScreen({ navigation }) {
   const [homeAddress, setHomeAddress] = useState("");
 
   const [temp, setTemp] = useState([]);
+
+  const [
+    user,
+    handlePatientIdChange,
+    handleUserIdChange,
+    handleUsernameChange,
+    handleEmailChange,
+    handleFirstnameChange,
+    handleSurnameChange,
+    handleDOBChange,
+    handleGenderChange,
+    handleHomeAddressChange,
+  ] = User({
+    patientId: "",
+    uid: "",
+    username: "",
+    email: "",
+    firstname: "",
+    surname: "",
+    dob: "",
+    gender: "",
+    homeAddress: "",
+  });
 
   const handleSignOut = () => {
     signOut(auth)
@@ -50,9 +75,7 @@ export default function ProfileScreen({ navigation }) {
   /**
    * Method saves a copy of the users details and enables edit mode
    */
-  const handleEnableEditMode = () => {
-    
-  };
+  const handleEnableEditMode = () => {};
 
   function showDOBPicker() {
     Keyboard.dismiss();
@@ -85,22 +108,25 @@ export default function ProfileScreen({ navigation }) {
   }, []);
 
   /**
-   * Method grabs basic User information and corresponding Patient data on screen load
+   * Method calls process to retrieve User Information on screen load
    */
   useEffect(() => {
-    const user = auth.currentUser;
-
-    // Grab User Information
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setEmail(user.email);
-        setUsername(user.displayName);
-      }
+    const unsubscribe = navigation.addListener("focus", () => {
+      handleGetInformation();
     });
 
-    // Grab Patient Information
+    return unsubscribe;
+  }, []);
+
+  
+  const handleGetInformation = async () => {
+    const user = auth.currentUser;
+    
     if (user) {
-      fetch(
+      setEmail(user.email);
+      setUsername(user.displayName);
+      
+      await fetch(
         REACT_APP_LOCAL_BACKEND_BASE_URL +
           "/api/patient/getPatientByUserId/" +
           user.uid,
@@ -116,75 +142,81 @@ export default function ProfileScreen({ navigation }) {
           setPatientInformation(json);
         })
         .catch((error) => {
-          console.log(error);
           alert("Couldnt retrieve patient information: " + error.message);
         });
     }
-  }, []);
+  };
 
-  const handleUpdateProfile = () => {
-    updateProfile(auth.currentUser, {
+  /**
+   * Method performs update on User and Patient details
+   */
+  const handleSaveChanges = async () => {
+    const user = auth.currentUser;
+
+    updateProfile(user, {
       displayName: username,
     })
-      .then(() => {
-        setIsEditMode(false);
-        console.log("User information updated!");
-        console.log("User ID: " + auth.currentUser.uid);
-        // Todo: Update Patient data
-        // fetch("https://localhost:8080/api/patient/update/", {
-        //   method: "POST",
-        //   headers: {
-        //     Accept: 'application/json',
-        //     'Content-Type': 'application/json',
-        //   }, body: JSON.stringify({
-
-        //   }),
-        // })
-        //   .then(() => {
-        //     setIsEditMode(false)
-        //     console.log("User information updated!")
-        //     console.log("User ID: " + auth.currentUser.uid)
-        //   })
-        //   .catch((error) => {
-        //     // An error occured
-        //     alert(error.message);
-        //   });
-      })
       .catch((error) => {
-        // An error occured
         alert(error.message);
       });
+
+    const updatedPatientProps = {
+      uid: user.uid,
+      firstname: firstname,
+      surname: surname,
+      dob: dateOfBirth,
+      gender: gender,
+      homeAddress: homeAddress,
+    };
+
+    await fetch(
+      REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/patient/update/" + patientId,
+      {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(updatedPatientProps),
+      }
+    )
+      .catch((error) => {
+        console.log(error);
+        alert("Couldnt retrieve update Patient Information: " + error.message);
+      });
+
+    setIsEditMode(false);
+  };
+
+  /**
+   * Method reverts state of User and Patient variables to the values of
+   * the currently saved User and Patient properties
+   */
+  const handleDiscardChanges = async () => {
+    console.log("Value of Gender before await: " + gender);
+    await handleGetInformation();
+    setIsEditMode(false);
+    console.log("Value of Gender after await: " + gender);
   };
 
   function setPatientInformation(jsonResponse) {
+    setPatientId(jsonResponse.patientId);
     setFirstname(jsonResponse.firstname);
     setSurname(jsonResponse.surname);
-    setDateOfBirth(Date.parse(jsonResponse.dob));
-    // setDateOfBirthText(formatDate(Date.parse(jsonResponse.dob)));
-    parseGender(jsonResponse.gender);
+    setDateOfBirth(new Date(jsonResponse.dob));
+    setDateOfBirthText(formatDate(new Date(jsonResponse.dob)));
+    setGender(jsonResponse.gender);
     setHomeAddress(jsonResponse.homeAddress);
   }
 
-  function parseGender(responseGender) {
-    switch (responseGender) {
-      case "Male":
-        setGender("male");
-        break;
-      case "Female":
-        setGender("female");
-        break;
-      case "Nonbinary":
-        setGender("nonbinary");
-        break;
-      case "Other":
-        setGender("other");
-        break;
-    }
-  }
-
+  /**
+   * Method passed into Dialog Component which sets the gender to the
+   * selectedValue of the Dialog Component
+   */
   const handleGenderSelect = (value) => {
     setGender(value);
   };
+
+  console.log(gender)
 
   return (
     <KeyboardAwareScrollView style={globalStyle.scrollableContainer}>
@@ -324,7 +356,7 @@ export default function ProfileScreen({ navigation }) {
         {isEditMode && (
           <TouchableOpacity
             style={styles.saveChangesBtn}
-            onPress={handleUpdateProfile}
+            onPress={handleSaveChanges}
           >
             <Text style={styles.saveOrDiscardBtnText}>Save Changes</Text>
             <FeatherIcon name="check-circle" size={20} />
@@ -334,7 +366,7 @@ export default function ProfileScreen({ navigation }) {
         {isEditMode && (
           <TouchableOpacity
             style={styles.discardChangesBtn}
-            onPress={() => setIsEditMode(false)}
+            onPress={() => handleDiscardChanges()}
           >
             <Text style={styles.saveOrDiscardBtnText}>Discard Changes</Text>
             <FeatherIcon name="x-circle" size={20} />

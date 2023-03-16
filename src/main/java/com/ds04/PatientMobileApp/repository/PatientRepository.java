@@ -9,6 +9,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -50,19 +51,14 @@ public class PatientRepository {
     }
 
     public String update(String patientId, Patient patient) throws ExecutionException, InterruptedException {
-//        ObjectMapper oMapper = new ObjectMapper();
-//        Map<String, Object> map = oMapper.convertValue(wound, Map.class);
-//
-//        Firestore db = FirestoreClient.getFirestore();
-//        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundId).update(map);
-//        return future.get().getUpdateTime().toString();
-        return null;
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(patientId).update(patient.convertToMap());
+        return future.get().getUpdateTime().toString();
     }
 
     public String delete(String patientId) throws ExecutionException, InterruptedException {
-//        Firestore db = FirestoreClient.getFirestore();
-//        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundId).delete();
-//        return future.get().getUpdateTime().toString();
-        return null;
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(patientId).delete();
+        return future.get().getUpdateTime().toString();
     }
 }
