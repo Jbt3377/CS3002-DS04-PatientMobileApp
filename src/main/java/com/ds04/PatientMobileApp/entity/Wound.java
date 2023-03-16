@@ -32,7 +32,7 @@ public class Wound {
     }
 
     public void setWoundId() {
-        WoundId = UUID.randomUUID().toString();;
+        WoundId = UUID.randomUUID().toString();
     }
 
     public String getPatientId() {
