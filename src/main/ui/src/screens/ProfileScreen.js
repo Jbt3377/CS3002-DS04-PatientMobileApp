@@ -21,12 +21,11 @@ const globalStyle = require("../../Style");
 
 export default function ProfileScreen({ navigation }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [dateOfBirthText, setDateOfBirthText] = useState("");
   const [dateOfBirthDatePickerVisible, setDateOfBirthDatePickerVisible] =
     useState(false);
-
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [user, setUser, setUserProperty] = User({
     patientId: "",
@@ -35,24 +34,22 @@ export default function ProfileScreen({ navigation }) {
     email: "",
     firstname: "",
     surname: "",
-    dob: new Date(),
+    dob: null,
     gender: "",
     homeAddress: "",
   });
 
-  const [tempUser, setTempUser, setTempUserProperty] = User({
+  const [tempUser, setTempUser] = User({
     patientId: "",
     uid: "",
     username: "",
     email: "",
     firstname: "",
     surname: "",
-    dob: new Date(),
+    dob: null,
     gender: "",
     homeAddress: "",
   });
-
-  // const [tempUser, setTempUser] = useState();
 
   /**
    * Method performs a Sign Out action on current user and returns to Login Screen
@@ -86,6 +83,7 @@ export default function ProfileScreen({ navigation }) {
     setIsButtonDisabled(true);
     setIsEditMode(false);
     setUser({ ...tempUser });
+    checkUserDobAndUpdateDobTextAccordingly(user.dob);
     setIsButtonDisabled(false);
   };
 
@@ -110,14 +108,12 @@ export default function ProfileScreen({ navigation }) {
 
   function onDateSelected(event, value) {
     setDateOfBirthDatePickerVisible(false);
-    setDateOfBirthText(formatDate(newDate(value)));
-    //todo set user.dob
-  }
 
-  // const onGenderOpen = useCallback(() => {
-  //   Keyboard.dismiss();
-  //   setDateOfBirthDatePickerVisible(false);
-  // }, []);
+    if (event.type == "set") {
+      setUserProperty("dob", new Date(value));
+    }
+
+  }
 
   /**
    * Callback to close popups when a textInput field is selected
@@ -182,7 +178,7 @@ export default function ProfileScreen({ navigation }) {
       uid: user.uid,
       firstname: user.firstname,
       surname: user.surname,
-      dob: user.dateOfBirth,
+      dob: user.dob,
       gender: user.gender,
       homeAddress: user.homeAddress,
     };
@@ -215,13 +211,28 @@ export default function ProfileScreen({ navigation }) {
     setUserProperty("uid", jsonResponse.uid);
     setUserProperty("firstname", jsonResponse.firstname);
     setUserProperty("surname", jsonResponse.surname);
-    setUserProperty("dob", new Date(jsonResponse.dob));
+    setUserProperty("dob", jsonResponse.dob);
     setUserProperty("gender", jsonResponse.gender);
     setUserProperty("homeAddress", jsonResponse.homeAddress);
-
-    // Updates screen useState keeping track of User's formatted DOB
-    setDateOfBirthText(formatDate(new Date(jsonResponse.dob)));
   }
+
+  /**
+   * Set the dateOfBirthText field accordingly based on the User's saved DOB
+   */
+  checkUserDobAndUpdateDobTextAccordingly = () => {
+    if (user.dob == null) {
+      setDateOfBirthText("DD/MM/YYYY");
+    } else {
+      setDateOfBirthText(formatDate(new Date(user.dob)));
+    }
+  }
+
+  /**
+   * useEffect acts as a replacement callback for textInput field showing dateOfBirthText
+   */
+  useEffect(() => {
+    checkUserDobAndUpdateDobTextAccordingly();
+  });
 
 
   return (
@@ -311,7 +322,7 @@ export default function ProfileScreen({ navigation }) {
 
         {dateOfBirthDatePickerVisible && (
           <DateTimePicker
-            value={user.dateOfBirth}
+            value={new Date()}
             mode={"date"}
             is24Hour={true}
             onChange={onDateSelected}
