@@ -22,51 +22,54 @@ export default function DashboardScreen({ navigation }) {
 
   return (
     <SafeAreaView style={globalStyle.container}>
-      <SafeAreaView style={styles.welcomeTextContainer}>
+      <SafeAreaView style={styles.welcomeTextArea}>
         <Text style={styles.welcomeText}>Hello, {displayName}!</Text>
       </SafeAreaView>
-      <SafeAreaView style={styles.row}>
-        <TouchableOpacity
-          style={styles.dashboardBtn}
-          onPress={() => navigation.navigate("WoundCaptureScreen")}
-        >
-          <SafeAreaView style={styles.dashboardOption}>
-            <FeatherIcon style={styles.btnIcon} name="camera" size={60} />
-            <Text style={styles.btnText}>Take Photo</Text>
-          </SafeAreaView>
-        </TouchableOpacity>
+      
+      <SafeAreaView style={styles.optionsArea}>
+        <SafeAreaView style={styles.row}>
+          <TouchableOpacity
+            style={styles.dashboardBtn}
+            onPress={() => navigation.navigate("WoundCaptureScreen")}
+          >
+            <SafeAreaView style={styles.dashboardOption}>
+              <FeatherIcon style={styles.btnIcon} name="camera" size={60} />
+              <Text style={styles.btnText}>Take Photo</Text>
+            </SafeAreaView>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.dashboardBtn}
-          onPress={() => navigation.navigate("WoundSelectScreen")}
-        >
-          <SafeAreaView style={styles.dashboardOption}>
-            <FeatherIcon style={styles.btnIcon} name="list" size={60} />
-            <Text style={styles.btnText}>See Records</Text>
-          </SafeAreaView>
-        </TouchableOpacity>
-      </SafeAreaView>
+          <TouchableOpacity
+            style={styles.dashboardBtn}
+            onPress={() => navigation.navigate("WoundSelectScreen")}
+          >
+            <SafeAreaView style={styles.dashboardOption}>
+              <FeatherIcon style={styles.btnIcon} name="list" size={60} />
+              <Text style={styles.btnText}>See Records</Text>
+            </SafeAreaView>
+          </TouchableOpacity>
+        </SafeAreaView>
 
-      <SafeAreaView style={styles.row}>
-        <TouchableOpacity
-          style={styles.dashboardBtn}
-          onPress={() => navigation.navigate("ProfileScreen")}
-        >
-          <SafeAreaView style={styles.dashboardOption}>
-            <FeatherIcon style={styles.btnIcon} name="user" size={60} />
-            <Text style={styles.btnText}>Edit Profile</Text>
-          </SafeAreaView>
-        </TouchableOpacity>
+        <SafeAreaView style={styles.row}>
+          <TouchableOpacity
+            style={styles.dashboardBtn}
+            onPress={() => navigation.navigate("ProfileScreen")}
+          >
+            <SafeAreaView style={styles.dashboardOption}>
+              <FeatherIcon style={styles.btnIcon} name="user" size={60} />
+              <Text style={styles.btnText}>Edit Profile</Text>
+            </SafeAreaView>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.dashboardBtn}
-          onPress={() => navigation.navigate("SettingsScreen")}
-        >
-          <SafeAreaView style={styles.dashboardOption}>
-            <FeatherIcon style={styles.btnIcon} name="tool" size={60} />
-            <Text style={styles.btnText}>Settings</Text>
-          </SafeAreaView>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.dashboardBtn}
+            onPress={() => navigation.navigate("SettingsScreen")}
+          >
+            <SafeAreaView style={styles.dashboardOption}>
+              <FeatherIcon style={styles.btnIcon} name="tool" size={60} />
+              <Text style={styles.btnText}>Settings</Text>
+            </SafeAreaView>
+          </TouchableOpacity>
+        </SafeAreaView>
       </SafeAreaView>
     </SafeAreaView>
   );
@@ -96,10 +99,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
   },
-  welcomeTextContainer: {
+  welcomeTextArea: {
+    flex: 2,
+    justifyContent: "center",
     alignItems: "center",
   },
   welcomeText: {
     color: "white",
+    fontSize: 20,
+    marginTop: 40,
+  },
+  optionsArea: {
+    flex: 5,
   },
 });

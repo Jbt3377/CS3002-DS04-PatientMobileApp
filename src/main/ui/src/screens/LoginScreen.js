@@ -45,17 +45,23 @@ export default function LoginScreen({ navigation }) {
    * Method that performs User Sign Up action
    */
   const handleSignUp = async () => {
+
+    if(password !== confirmPassword){
+      alert("Password's do not match");
+      return;
+    }
+    
+    // Create User Action
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
+
+        // Set Username Action
         updateProfile(auth.currentUser, {
           displayName: username,
         })
           .then(async () => {
-
-            const initialPatientProps = {
-              uid: auth.currentUser.uid,
-            };
             
+            // Create Patient Action
             await fetch(
               REACT_APP_LOCAL_BACKEND_BASE_URL +
                 "/api/patient/create",
@@ -64,7 +70,7 @@ export default function LoginScreen({ navigation }) {
                 headers: {
                   "content-type": "application/json",
                 },
-                body: JSON.stringify(initialPatientProps),
+                body: JSON.stringify({ uid: auth.currentUser.uid }),
               }
             ).catch((error) => {
               alert("Couldnt retrieve update Patient Information: " + error.message);
@@ -88,7 +94,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   /**
-   * Async method that performs User Sign In action
+   * Method that performs User Sign In action
    */
   const handleSignIn = () => {
     signInWithEmailAndPassword(auth, email, password)
