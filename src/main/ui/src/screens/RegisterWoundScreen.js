@@ -147,6 +147,10 @@ export default function RegisterWoundScreen({ navigation }) {
     }
   }
 
+  const handleSaveWound = () => {
+    console.log("pressed")
+  };
+
   return (
     <ScrollView
       style={globalStyle.scrollableContainer}
@@ -328,12 +332,12 @@ export default function RegisterWoundScreen({ navigation }) {
 
         <SafeAreaView style={styles.nextBtnContainer}>
           <IconButton
-            icon="arrow-right"
+            icon="check"
             mode="contained-tonal"
             iconColor={"green"}
             containerColor={"darkseagreen"}
             size={40}
-            onPress={() => console.log("Pressed")}
+            onPress={() => handleSaveWound()}
           />
         </SafeAreaView>
       </SafeAreaView>

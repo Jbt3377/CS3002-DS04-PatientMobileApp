@@ -6,7 +6,7 @@ import {
   TextInput,
 } from "react-native-paper";
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const DialogWithRadioButtons = ({
   dialogOptions,
@@ -119,7 +119,7 @@ const DialogWithRadioButtons = ({
         />
       </TouchableOpacity>
       <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
+        <Dialog style={styles.dialogBox} visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>Select a value</Dialog.Title>
           <Dialog.Content>
             <RadioButton.Group
@@ -140,3 +140,9 @@ const DialogWithRadioButtons = ({
 };
 
 export default DialogWithRadioButtons;
+
+const styles = StyleSheet.create({
+  dialogBox: {
+    borderRadius: 20,
+  }
+});
