@@ -20,10 +20,9 @@ public class PatientRepository {
     private static final String COLLECTION_NAME = "patients";
 
     public String create(Patient patient) throws ExecutionException, InterruptedException {
-//        Firestore db = FirestoreClient.getFirestore();
-//        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId()).set(wound);
-//        return future.get().getUpdateTime().toString();
-        return null;
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(patient.getPatientId()).set(patient);
+        return future.get().getUpdateTime().toString();
     }
 
     public Patient findById(String patientId) throws ExecutionException, InterruptedException {

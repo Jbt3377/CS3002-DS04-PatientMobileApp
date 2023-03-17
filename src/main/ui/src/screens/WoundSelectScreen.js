@@ -1,5 +1,6 @@
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const globalStyle = require("../../Style");
@@ -23,22 +24,27 @@ export default function WoundSelectScreen({ navigation }) {
         </TouchableOpacity>
       </SafeAreaView>
 
-      <SafeAreaView style={styles.selectWoundArea}>
-        <TouchableOpacity style={styles.woundBtn}>
-          <Text style={styles.btnText}>Wound 1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.woundBtn}>
-          <Text style={styles.btnText}>Wound 1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.woundBtn}>
-          <Text style={styles.btnText}>Wound 1</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <KeyboardAwareScrollView style={styles.scrollableContainer}>
+        <SafeAreaView style={styles.selectWoundArea}>
+          <TouchableOpacity style={styles.woundBtn}>
+            <Text style={styles.btnText}>Wound 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.woundBtn}>
+            <Text style={styles.btnText}>Wound 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.woundBtn}>
+            <Text style={styles.btnText}>Wound 1</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </KeyboardAwareScrollView> 
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollableContainer: {
+    backgroundColor: "#99ccff",
+  },
   addWoundArea: {
     flex: 1,
     alignItems: "center",

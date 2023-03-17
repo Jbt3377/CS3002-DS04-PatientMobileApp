@@ -15,14 +15,14 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public String createPatient(Patient newPatient) {
+    public String createPatient(Patient patient) {
         try {
-            // Check if WoundId provided
-            if(newPatient.getPatientId() == null){
-                newPatient.setPatientId();
+            // Generate a PatientId
+            if(patient.getPatientId() == null){
+                patient.setPatientId();
             }
 
-            return patientRepository.create(newPatient);
+            return patientRepository.create(patient);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

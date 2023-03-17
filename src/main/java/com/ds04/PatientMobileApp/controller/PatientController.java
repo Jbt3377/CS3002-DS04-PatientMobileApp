@@ -13,8 +13,8 @@ public class PatientController {
     private PatientService patientService;
 
     @PostMapping("/create")
-    public String createPatient(@RequestBody Patient newPatient) {
-        return patientService.createPatient(newPatient);
+    public String createPatient(@RequestBody Patient patient) {
+        return patientService.createPatient(patient);
     }
 
     @GetMapping("/getPatientByPatientId/{patientId}")

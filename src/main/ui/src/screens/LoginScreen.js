@@ -11,12 +11,12 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
 } from "firebase/auth";
 
+import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import { TextInput } from "react-native-paper";
 import { auth } from "../../Firebase";
 
@@ -42,16 +42,34 @@ export default function LoginScreen({ navigation }) {
   }, [navigation]);
 
   /**
-   * Async method that performs User Sign Up action
+   * Method that performs User Sign Up action
    */
-  const handleSignUp = () => {
-    // todo check confirm password logic
+  const handleSignUp = async () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         updateProfile(auth.currentUser, {
           displayName: username,
         })
-          .then(() => {
+          .then(async () => {
+
+            const initialPatientProps = {
+              uid: auth.currentUser.uid,
+            };
+            
+            await fetch(
+              REACT_APP_LOCAL_BACKEND_BASE_URL +
+                "/api/patient/create",
+              {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify(initialPatientProps),
+              }
+            ).catch((error) => {
+              alert("Couldnt retrieve update Patient Information: " + error.message);
+            });
+            
             clearLoginScreenUseStates();
 
             if (auth.currentUser) {
@@ -59,14 +77,14 @@ export default function LoginScreen({ navigation }) {
             }
           })
           .catch((error) => {
-            // An error occured updating profile of new user
             alert(error.message);
           });
       })
       .catch((error) => {
-        // An error occured signing up new user
         alert(error.message);
       });
+      
+      
   };
 
   /**
@@ -205,7 +223,7 @@ export default function LoginScreen({ navigation }) {
             </SafeAreaView>
 
             <SafeAreaView style={styles.loginBtnArea}>
-              <TouchableOpacity style={styles.loginBtn} onPress={handleSignUp}>
+              <TouchableOpacity style={styles.loginBtn} onPress={() => handleSignUp()}>
                 <Text style={styles.loginBtnText}>Create Account</Text>
               </TouchableOpacity>
               <Text style={styles.orText}>or</Text>
