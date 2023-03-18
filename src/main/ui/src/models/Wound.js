@@ -1,3 +1,9 @@
+import {
+  isDateOrBoolPropValid,
+  isMultiSelectPropValid,
+  isStringValid,
+} from "../actions/ValidationFunctions";
+
 import { useState } from "react";
 
 export default function Wound(initialInformation) {
@@ -7,5 +13,19 @@ export default function Wound(initialInformation) {
     setWound((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  return [wound, setWound, setWoundProperty];
+  const woundModelIsValid = () => {
+    return (
+      isStringValid(wound.woundType) &&
+      isStringValid(wound.woundLocationOnBody) &&
+      isDateOrBoolPropValid(wound.injuryDate) &&
+      isStringValid(wound.placeOfInjury) &&
+      isStringValid(wound.injuryIntent) &&
+      isStringValid(wound.injuryActivityStatus) &&
+      isStringValid(wound.injuryActivityType) &&
+      isMultiSelectPropValid(wound.injuryMechanism) &&
+      isDateOrBoolPropValid(wound.injuryDrugOrAlcoholInvolvement)
+    );
+  };
+
+  return [wound, setWound, setWoundProperty, woundModelIsValid];
 }

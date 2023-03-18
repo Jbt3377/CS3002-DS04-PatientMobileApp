@@ -122,7 +122,6 @@ const DialogWithCheckboxes = ({
    * useEffect that sets the pre-selected checkboxes
    */
   useEffect(() => {
-    console.log(selectedValues);
     if (isEditMode) {
       if (currentValues && selectedValues === []) {
         // Condition: in edit mode AND no differing values selected to the already saved values

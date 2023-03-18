@@ -1,23 +1,20 @@
 import { IconButton, TextInput } from "react-native-paper";
 import React, { useState } from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text } from "react-native";
 
 import DatePicker from "../components/DatePicker";
 import DialogWithCheckboxes from "../components/DialogWithCheckboxes";
 import DialogWithRadioButtons from "../components/DialogWithRadioButtons";
+import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import Wound from "../models/Wound";
+import { auth } from "../../Firebase";
 
 const globalStyle = require("../../Style");
 
 export default function RegisterWoundScreen({ navigation }) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const [wound, setWound, setWoundProperty] = Wound({
+  const [wound, setWound, setWoundProperty, woundModelIsValid] = Wound({
     woundId: "",
     uid: "",
     woundType: "",
@@ -63,8 +60,42 @@ export default function RegisterWoundScreen({ navigation }) {
     setWoundProperty("injuryMechanism", selectedValues);
   };
 
-  const handleSaveWound = () => {
-    console.log("pressed");
+  const handleSaveWound = async () => {
+    console.log("Pressed");
+
+    // Check validity of Wound properties
+    if (!woundModelIsValid()) {
+      alert("Not all required fields completed");
+      return null;
+    }
+
+    console.log("Sending POST Request");
+
+    // Construct Body
+    const initialWoundProps = {
+      uid: auth.currentUser.uid,
+      woundType: wound.woundType,
+      woundLocationOnBody: wound.woundLocationOnBody,
+      injuryDate: wound.injuryDate,
+      placeOfInjury: wound.placeOfInjury,
+      injuryIntent: wound.injuryIntent,
+      injuryActivityStatus: wound.injuryActivityStatus,
+      injuryActivityType: wound.injuryActivityType,
+      injuryMechanism: wound.injuryMechanism,
+      injuryDrugOrAlcoholInvolvement: wound.injuryDrugOrAlcoholInvolvement,
+      asaultLocationDescription: wound.asaultLocationDescription,
+    };
+
+    // POST Request Action
+    await fetch(REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/wound/create", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ initialWoundProps }),
+    }).catch((error) => {
+      alert("An error occured creating Wound: " + error.message);
+    });
   };
 
   return (

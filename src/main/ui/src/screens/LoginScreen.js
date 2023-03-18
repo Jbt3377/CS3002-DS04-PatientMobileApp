@@ -69,9 +69,7 @@ export default function LoginScreen({ navigation }) {
                 body: JSON.stringify({ uid: auth.currentUser.uid }),
               }
             ).catch((error) => {
-              alert(
-                "Couldnt retrieve update Patient Information: " + error.message
-              );
+              alert("An error occured creating Patient: " + error.message);
             });
 
             clearLoginScreenUseStates();
