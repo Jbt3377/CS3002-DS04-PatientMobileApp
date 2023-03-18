@@ -1,15 +1,9 @@
 import { Avatar, TextInput } from "react-native-paper";
-import {
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { signOut, updateProfile } from "firebase/auth";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DatePicker from "../components/DatePicker";
 import DialogWithRadioButtons from "../components/DialogWithRadioButtons";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -22,10 +16,6 @@ const globalStyle = require("../../Style");
 export default function ProfileScreen({ navigation }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
-  const [dateOfBirthText, setDateOfBirthText] = useState("");
-  const [dateOfBirthDatePickerVisible, setDateOfBirthDatePickerVisible] =
-    useState(false);
 
   const [user, setUser, setUserProperty] = User({
     patientId: "",
@@ -83,44 +73,8 @@ export default function ProfileScreen({ navigation }) {
     setIsButtonDisabled(true);
     setIsEditMode(false);
     setUser({ ...tempUser });
-    checkUserDobAndUpdateDobTextAccordingly(user.dob);
     setIsButtonDisabled(false);
   };
-
-  function showDOBPicker() {
-    Keyboard.dismiss();
-    setDateOfBirthDatePickerVisible(true);
-  }
-
-  /**
-   * Method accepts a timestamp and returns the date in DD/MM/YYYY format
-   */
-  function formatDate(tempDate) {
-    const year = tempDate.getFullYear();
-    let month = tempDate.getMonth() + 1;
-    let day = tempDate.getDate();
-
-    if (day < 10) day = "0" + day;
-    if (month < 10) month = "0" + month;
-
-    return day + "/" + month + "/" + year;
-  }
-
-  function onDateSelected(event, value) {
-    setDateOfBirthDatePickerVisible(false);
-
-    if (event.type == "set") {
-      setUserProperty("dob", new Date(value));
-    }
-
-  }
-
-  /**
-   * Callback to close popups when a textInput field is selected
-   */
-  const onTextInputPress = useCallback(() => {
-    setDateOfBirthDatePickerVisible(false);
-  }, []);
 
   /**
    * Method calls process to retrieve User Information on screen load
@@ -206,7 +160,7 @@ export default function ProfileScreen({ navigation }) {
   /**
    * Method accepts JSON response and updates the User props
    */
-  function setPatientInformation(jsonResponse) {
+  const setPatientInformation = (jsonResponse) => {
     setUserProperty("patientId", jsonResponse.patientId);
     setUserProperty("uid", jsonResponse.uid);
     setUserProperty("firstname", jsonResponse.firstname);
@@ -214,26 +168,14 @@ export default function ProfileScreen({ navigation }) {
     setUserProperty("dob", jsonResponse.dob);
     setUserProperty("gender", jsonResponse.gender);
     setUserProperty("homeAddress", jsonResponse.homeAddress);
-  }
+  };
 
   /**
-   * Set the dateOfBirthText field accordingly based on the User's saved DOB
+   * Method passed to DatePicker to update the Date of Birth User Property
    */
-  checkUserDobAndUpdateDobTextAccordingly = () => {
-    if (user.dob == null) {
-      setDateOfBirthText("DD/MM/YYYY");
-    } else {
-      setDateOfBirthText(formatDate(new Date(user.dob)));
-    }
-  }
-
-  /**
-   * useEffect acts as a replacement callback for textInput field showing dateOfBirthText
-   */
-  useEffect(() => {
-    checkUserDobAndUpdateDobTextAccordingly();
-  });
-
+  const setDateOfBirthProperty = (value) => {
+    setUserProperty("dob", new Date(value));
+  };
 
   return (
     <KeyboardAwareScrollView style={globalStyle.scrollableContainer}>
@@ -254,7 +196,6 @@ export default function ProfileScreen({ navigation }) {
             value={user.email}
             mode="outlined"
             onChangeText={(value) => setUserProperty("email", value)}
-            onPressIn={onTextInputPress}
             editable={isEditMode}
           />
         </SafeAreaView>
@@ -267,7 +208,6 @@ export default function ProfileScreen({ navigation }) {
             value={user.username}
             mode="outlined"
             onChangeText={(value) => setUserProperty("username", value)}
-            onPressIn={onTextInputPress}
             editable={isEditMode}
           />
         </SafeAreaView>
@@ -280,7 +220,6 @@ export default function ProfileScreen({ navigation }) {
             value={user.firstname}
             mode="outlined"
             onChangeText={(value) => setUserProperty("firstname", value)}
-            onPressIn={onTextInputPress}
             editable={isEditMode}
           />
         </SafeAreaView>
@@ -293,42 +232,18 @@ export default function ProfileScreen({ navigation }) {
             value={user.surname}
             mode="outlined"
             onChangeText={(value) => setUserProperty("surname", value)}
-            onPressIn={onTextInputPress}
             editable={isEditMode}
           />
         </SafeAreaView>
 
         <SafeAreaView style={globalStyle.fieldContainer}>
           <Text style={globalStyle.textInputLabel}>Date of Birth</Text>
-          <SafeAreaView style={globalStyle.datePickerContainer}>
-            <TextInput
-              style={globalStyle.datePickerTextInput}
-              outlineColor={"black"}
-              placeholder={"DD/MM/YYYY"}
-              value={dateOfBirthText}
-              mode="outlined"
-              editable={false}
-            />
-
-            <TouchableOpacity
-              style={globalStyle.datePickerPressable}
-              onPress={showDOBPicker}
-              disabled={!isEditMode}
-            >
-              <FeatherIcon name="calendar" size={30} />
-            </TouchableOpacity>
-          </SafeAreaView>
-        </SafeAreaView>
-
-        {dateOfBirthDatePickerVisible && (
-          <DateTimePicker
-            value={new Date()}
-            mode={"date"}
-            is24Hour={true}
-            onChange={onDateSelected}
-            style={globalStyle.datePicker}
+          <DatePicker
+            dateValue={user.dob}
+            setDateValue={(value) => setDateOfBirthProperty(value)}
+            isEditMode={isEditMode}
           />
-        )}
+        </SafeAreaView>
 
         <SafeAreaView style={globalStyle.fieldContainer}>
           <Text style={globalStyle.dropDownLabel}>Gender</Text>
@@ -348,7 +263,6 @@ export default function ProfileScreen({ navigation }) {
             value={user.homeAddress}
             mode="outlined"
             onChangeText={(value) => setUserProperty("homeAddress", value)}
-            onPressIn={onTextInputPress}
             editable={isEditMode}
           />
         </SafeAreaView>

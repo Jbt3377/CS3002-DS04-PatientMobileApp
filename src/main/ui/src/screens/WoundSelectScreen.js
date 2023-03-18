@@ -36,7 +36,7 @@ export default function WoundSelectScreen({ navigation }) {
             <Text style={styles.btnText}>Wound 1</Text>
           </TouchableOpacity>
         </SafeAreaView>
-      </KeyboardAwareScrollView> 
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

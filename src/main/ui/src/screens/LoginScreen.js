@@ -45,26 +45,22 @@ export default function LoginScreen({ navigation }) {
    * Method that performs User Sign Up action
    */
   const handleSignUp = async () => {
-
-    if(password !== confirmPassword){
+    if (password !== confirmPassword) {
       alert("Password's do not match");
       return;
     }
-    
+
     // Create User Action
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-
         // Set Username Action
         updateProfile(auth.currentUser, {
           displayName: username,
         })
           .then(async () => {
-            
             // Create Patient Action
             await fetch(
-              REACT_APP_LOCAL_BACKEND_BASE_URL +
-                "/api/patient/create",
+              REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/patient/create",
               {
                 method: "POST",
                 headers: {
@@ -73,9 +69,11 @@ export default function LoginScreen({ navigation }) {
                 body: JSON.stringify({ uid: auth.currentUser.uid }),
               }
             ).catch((error) => {
-              alert("Couldnt retrieve update Patient Information: " + error.message);
+              alert(
+                "Couldnt retrieve update Patient Information: " + error.message
+              );
             });
-            
+
             clearLoginScreenUseStates();
 
             if (auth.currentUser) {
@@ -89,8 +87,6 @@ export default function LoginScreen({ navigation }) {
       .catch((error) => {
         alert(error.message);
       });
-      
-      
   };
 
   /**
@@ -229,7 +225,10 @@ export default function LoginScreen({ navigation }) {
             </SafeAreaView>
 
             <SafeAreaView style={styles.loginBtnArea}>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => handleSignUp()}>
+              <TouchableOpacity
+                style={styles.loginBtn}
+                onPress={() => handleSignUp()}
+              >
                 <Text style={styles.loginBtnText}>Create Account</Text>
               </TouchableOpacity>
               <Text style={styles.orText}>or</Text>

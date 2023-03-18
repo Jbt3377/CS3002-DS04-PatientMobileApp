@@ -1,154 +1,70 @@
 import { IconButton, TextInput } from "react-native-paper";
+import React, { useState } from "react";
 import {
-  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useState } from "react";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
-import DropDownPicker from "react-native-dropdown-picker";
-import FeatherIcon from "react-native-vector-icons/Feather";
+import DatePicker from "../components/DatePicker";
+import DialogWithCheckboxes from "../components/DialogWithCheckboxes";
+import DialogWithRadioButtons from "../components/DialogWithRadioButtons";
+import Wound from "../models/Wound";
 
 const globalStyle = require("../../Style");
 
 export default function RegisterWoundScreen({ navigation }) {
-  // Wound Type
-  const [woundTypeOpen, setWoundTypeOpen] = useState(false);
-  const [woundType, setWoundType] = useState("");
-  const [woundTypeList, setWoundTypeList] = useState([
-    { label: "Venous Ulcer", value: "venous ulcer" },
-    { label: "Arterial Ulcer", value: "arterial ulcer" },
-    { label: "Diabetic Foot Ulcer", value: "diabetic foot ulcer" },
-    { label: "Pressure Ulcer", value: "pressure ulcer" },
-    { label: "Infectious Wound", value: "infectious wound" },
-    { label: "Ischemic Wound", value: "ischemic wound" },
-    { label: "Surgical Wounds", value: "surgical wounds" },
-    {
-      label: "Radiation Poisoning Wounds",
-      value: "radiation poisoning wounds",
-    },
-  ]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const onWoundTypeOpen = useCallback(() => {
-    Keyboard.dismiss();
-    setInjuryMechanismOpen(false);
-    setInjuryDatePickerVisible(false);
-    setInjuryDrugOrAlcoholInvolvementOpen(false);
-  }, []);
+  const [wound, setWound, setWoundProperty] = Wound({
+    woundId: "",
+    uid: "",
+    woundType: "",
+    woundLocationOnBody: "",
+    injuryDate: null,
+    placeOfInjury: "",
+    injuryIntent: "",
+    injuryActivityStatus: "",
+    injuryActivityType: "",
+    injuryMechanism: [],
+    injuryDrugOrAlcoholInvolvement: false,
+    asaultLocationDescription: "",
+  });
 
-  // Wound Location on Body
-  const [woundLocationOnBody, setWoundLocationOnBody] = useState("");
-
-  // Injury Date
-  const [injuryDate, setInjuryDate] = React.useState(new Date());
-  const [injuryDateText, setInjuryDateText] = React.useState("");
-  const [injuryDatePickerVisible, setInjuryDatePickerVisible] =
-    React.useState(false);
-
-  function showInjuryDatePicker() {
-    Keyboard.dismiss();
-    setWoundTypeOpen(false);
-    setInjuryMechanismOpen(false);
-    setInjuryDrugOrAlcoholInvolvementOpen(false);
-    setInjuryDatePickerVisible(true);
-  }
-
-  function onDateSelected(event, value) {
-    setInjuryDatePickerVisible(false);
-
-    const tempDate = new Date(value);
-    const year = tempDate.getFullYear();
-    let month = tempDate.getMonth() + 1;
-    let day = tempDate.getDate();
-
-    if (day < 10) day = "0" + day;
-    if (month < 10) month = "0" + month;
-
-    const fDate = day + "/" + month + "/" + year;
-    setInjuryDateText(fDate);
-  }
-
-  // Place of Injury
-  const [placeOfInjury, setPlaceOfInjury] = useState("");
-
-  // Injury Intent
-  const [injuryIntent, setInjuryIntent] = useState("");
-
-  // Injury Activity Status
-  const [injuryActivityStatus, setInjuryActivityStatus] = useState("");
-
-  // Injury Activity Type
-  const [injuryActivityType, setInjuryActivityType] = useState("");
-
-  // Injury Mechanism
-  const [injuryMechanismOpen, setInjuryMechanismOpen] = useState(false);
-  const [injuryMechanism, setInjuryMechanism] = useState([]);
-  const [injuryMechanismOptions, setInjuryMechanismOptions] = useState([
-    { label: "Blunt Force Trauma", value: "blunt force trauma" },
-    { label: "Penetrating Trauma", value: "penetrating trauma" },
-    { label: "Thermal Injury", value: "thermal injury" },
-    { label: "Chemical Injury", value: "chemical injury" },
-    { label: "Radiation Injury", value: "radiation injury" },
-    { label: "Electrical Injury", value: "electrical injury" },
-    { label: "Overuse Injury", value: "overuse injury" },
-  ]);
-
-  const onInjuryMechanismOpen = useCallback(() => {
-    Keyboard.dismiss();
-    setWoundTypeOpen(false);
-    setInjuryDatePickerVisible(false);
-    setInjuryDrugOrAlcoholInvolvementOpen(false);
-  }, []);
-
-  // Injury Alcohol or Drug Involvement
-  const [
-    injuryDrugOrAlcoholInvolvementOpen,
-    setInjuryDrugOrAlcoholInvolvementOpen,
-  ] = useState(false);
-  const [injuryDrugOrAlcoholInvolvement, setInjuryDrugOrAlcoholInvolvement] =
-    useState();
-  const [
-    injuryDrugOrAlcoholInvolvementOptions,
-    setInjuryDrugOrAlcoholInvolvementOptions,
-  ] = useState([
-    { label: "Yes", value: true },
-    { label: "No", value: false },
-  ]);
-
-  const onInjuryAlcoholOrDrugInvolvementOpen = useCallback(() => {
-    Keyboard.dismiss();
-    setWoundTypeOpen(false);
-    setInjuryDatePickerVisible(false);
-    setInjuryMechanismOpen(false);
-  }, []);
-
-  const onTextInputPress = useCallback(() => {
-    setWoundTypeOpen(false);
-    setInjuryDatePickerVisible(false);
-    setInjuryMechanismOpen(false);
-    setInjuryDrugOrAlcoholInvolvementOpen(false);
-  }, []);
-
-  // Assault Location Description
-  const [asaultLocationDescription, setAsaultLocationDescription] =
-    useState("");
   const [showAsaultLocationDescription, setShowAsaultLocationDescription] =
     useState(false);
 
-  function onInjuryAlcoholOrDrugInvolvementChange() {
-    if (injuryDrugOrAlcoholInvolvement) {
+  /**
+   * onChange Method passed into DialogWithRadioButtons Component for InjuryAlcoholOrDrugInvolvement
+   */
+  const onInjuryAlcoholOrDrugInvolvementChange = (value) => {
+    console.log(value);
+    setWoundProperty("injuryDrugOrAlcoholInvolvement", value);
+
+    if (wound.injuryDrugOrAlcoholInvolvement) {
       setShowAsaultLocationDescription(true);
     } else {
       setShowAsaultLocationDescription(false);
     }
-  }
+  };
+
+  /**
+   * onChange Method passed to DatePicker Component to update the injuryDate Wound Property
+   */
+  const setInjuryDateProperty = (value) => {
+    setWoundProperty("injuryDate", new Date(value));
+  };
+
+  /**
+   * onChange Method passed to DialogWithCheckboxes Component to update the injuryMechanism Wound Property
+   */
+  const setInjuryMechanismProperty = (selectedValues) => {
+    setWoundProperty("injuryMechanism", selectedValues);
+  };
 
   const handleSaveWound = () => {
-    console.log("pressed")
+    console.log("pressed");
   };
 
   return (
@@ -160,16 +76,11 @@ export default function RegisterWoundScreen({ navigation }) {
       <SafeAreaView style={styles.container}>
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.dropDownComponentText}>Wound Type</Text>
-          <DropDownPicker
-            style={styles.dropDownComponent}
-            open={woundTypeOpen}
-            value={woundType}
-            items={woundTypeList}
-            setOpen={setWoundTypeOpen}
-            setValue={setWoundType}
-            setItems={setWoundTypeList}
-            listMode="SCROLLVIEW"
-            onOpen={onWoundTypeOpen}
+          <DialogWithRadioButtons
+            dialogOptions={"woundTypes"}
+            onSelectValue={(value) => setWoundProperty("woundType", value)}
+            currentValue={wound.woundType}
+            isEditMode={true}
           />
         </SafeAreaView>
 
@@ -179,45 +90,22 @@ export default function RegisterWoundScreen({ navigation }) {
             style={styles.textComponent}
             outlineColor={"black"}
             placeholder={"E.g. Arm"}
-            value={woundLocationOnBody}
+            value={wound.woundLocationOnBody}
             mode="outlined"
-            onChangeText={(woundLocationOnBody) =>
-              setWoundLocationOnBody(woundLocationOnBody)
+            onChangeText={(value) =>
+              setWoundProperty("woundLocationOnBody", value)
             }
-            onPressIn={onTextInputPress}
           />
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.textComponentText}>Injury Date</Text>
-          <SafeAreaView style={styles.datePickerContainer}>
-            <TextInput
-              style={styles.datePickerTextInput}
-              outlineColor={"black"}
-              placeholder={"DD/MM/YYYY"}
-              value={injuryDateText}
-              mode="outlined"
-              editable={false}
-            />
-
-            <TouchableOpacity
-              style={styles.datePickerPressable}
-              onPress={showInjuryDatePicker}
-            >
-              <FeatherIcon name="calendar" size={30} />
-            </TouchableOpacity>
-          </SafeAreaView>
-        </SafeAreaView>
-
-        {injuryDatePickerVisible && (
-          <DateTimePicker
-            value={injuryDate}
-            mode={"date"}
-            is24Hour={true}
-            onChange={onDateSelected}
-            style={styles.datePicker}
+          <DatePicker
+            dateValue={wound.injuryDate}
+            setDateValue={(value) => setInjuryDateProperty(value)}
+            isEditMode={true}
           />
-        )}
+        </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.textComponentText}>Place of Injury</Text>
@@ -225,10 +113,9 @@ export default function RegisterWoundScreen({ navigation }) {
             style={styles.textComponent}
             outlineColor={"black"}
             placeholder={"E.g. Educational establishment"}
-            value={placeOfInjury}
+            value={wound.placeOfInjury}
             mode="outlined"
-            onChangeText={(placeOfInjury) => setPlaceOfInjury(placeOfInjury)}
-            onPressIn={onTextInputPress}
+            onChangeText={(value) => setWoundProperty("placeOfInjury", value)}
           />
         </SafeAreaView>
 
@@ -238,10 +125,9 @@ export default function RegisterWoundScreen({ navigation }) {
             style={styles.textComponent}
             outlineColor={"black"}
             placeholder={"E.g. Non-intentional, Self-harm"}
-            value={injuryIntent}
+            value={wound.injuryIntent}
             mode="outlined"
-            onChangeText={(injuryIntent) => setInjuryIntent(injuryIntent)}
-            onPressIn={onTextInputPress}
+            onChangeText={(value) => setWoundProperty("injuryIntent", value)}
           />
         </SafeAreaView>
 
@@ -251,12 +137,11 @@ export default function RegisterWoundScreen({ navigation }) {
             style={styles.textComponent}
             outlineColor={"black"}
             placeholder={"E.g. Recreational Exercise"}
-            value={injuryActivityStatus}
+            value={wound.injuryActivityStatus}
             mode="outlined"
-            onChangeText={(injuryActivityStatus) =>
-              setInjuryActivityStatus(injuryActivityStatus)
+            onChangeText={(value) =>
+              setWoundProperty("injuryActivityStatus", value)
             }
-            onPressIn={onTextInputPress}
           />
         </SafeAreaView>
 
@@ -266,48 +151,37 @@ export default function RegisterWoundScreen({ navigation }) {
             style={styles.textComponent}
             outlineColor={"black"}
             placeholder={"E.g. Ascending Stairs"}
-            value={injuryActivityType}
+            value={wound.injuryActivityType}
             mode="outlined"
-            onChangeText={(injuryActivityType) =>
-              setInjuryActivityType(injuryActivityType)
+            onChangeText={(value) =>
+              setWoundProperty("injuryActivityType", value)
             }
-            onPressIn={onTextInputPress}
           />
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.dropDownComponentText}>Injury Mechanism</Text>
-          <DropDownPicker
-            style={styles.dropDownComponent}
-            multiple={true}
-            mode="BADGE"
-            open={injuryMechanismOpen}
-            value={injuryMechanism}
-            items={injuryMechanismOptions}
-            setOpen={setInjuryMechanismOpen}
-            setValue={setInjuryMechanism}
-            setItems={setInjuryMechanismOptions}
-            listMode="SCROLLVIEW"
-            onOpen={onInjuryMechanismOpen}
+          <DialogWithCheckboxes
+            checkboxOptions={"injuryMechanisms"}
+            onConfirmValues={(selectedValues) =>
+              setInjuryMechanismProperty(selectedValues)
+            }
+            currentValues={wound.injuryMechanism}
+            isEditMode={true}
           />
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.dropDownComponentText}>
-            Injury Alcohol or Drug Involvement
+            Injury Drug or Alcohol Involvement
           </Text>
-          <DropDownPicker
-            style={styles.dropDownComponent}
-            open={injuryDrugOrAlcoholInvolvementOpen}
-            value={injuryDrugOrAlcoholInvolvement}
-            items={injuryDrugOrAlcoholInvolvementOptions}
-            setOpen={setInjuryDrugOrAlcoholInvolvementOpen}
-            setValue={setInjuryDrugOrAlcoholInvolvement}
-            setItems={setInjuryDrugOrAlcoholInvolvementOptions}
-            listMode="SCROLLVIEW"
-            onOpen={onInjuryAlcoholOrDrugInvolvementOpen}
-            dropDownDirection="BOTTOM"
-            onChangeValue={onInjuryAlcoholOrDrugInvolvementChange}
+          <DialogWithRadioButtons
+            dialogOptions={"yesOrNo"}
+            onSelectValue={(value) =>
+              onInjuryAlcoholOrDrugInvolvementChange(value)
+            }
+            currentValue={wound.injuryDrugOrAlcoholInvolvement}
+            isEditMode={true}
           />
         </SafeAreaView>
 
@@ -320,12 +194,11 @@ export default function RegisterWoundScreen({ navigation }) {
               style={styles.textComponent}
               outlineColor={"black"}
               placeholder={"Provide further details..."}
-              value={asaultLocationDescription}
+              value={wound.asaultLocationDescription}
               mode="outlined"
-              onChangeText={(asaultLocationDescription) =>
-                setShowAsaultLocationDescription(asaultLocationDescription)
+              onChangeText={(value) =>
+                setWoundProperty("asaultLocationDescription", value)
               }
-              onPressIn={onTextInputPress}
             />
           </SafeAreaView>
         )}

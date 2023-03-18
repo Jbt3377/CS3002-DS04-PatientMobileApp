@@ -5,8 +5,8 @@ import {
   RadioButton,
   TextInput,
 } from "react-native-paper";
+import { Keyboard, StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const DialogWithRadioButtons = ({
   dialogOptions,
@@ -17,7 +17,10 @@ const DialogWithRadioButtons = ({
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
 
-  const showDialog = () => setVisible(true);
+  const showDialog = () => {
+    Keyboard.dismiss();
+    setVisible(true);
+  };
   const hideDialog = () => setVisible(false);
 
   const handleRadioButtonChange = (value) => {
@@ -26,6 +29,11 @@ const DialogWithRadioButtons = ({
 
   const handleOkButtonPress = () => {
     onSelectValue(selectedValue);
+    hideDialog();
+  };
+
+  const handleCancelButtonPress = () => {
+    setSelectedValue(currentValue);
     hideDialog();
   };
 
@@ -49,20 +57,32 @@ const DialogWithRadioButtons = ({
   const woundTypeOptions = () => {
     return (
       <View>
-        <RadioButton.Item label="Venous Ulcer" value="venous ulcer" />
-        <RadioButton.Item label="Arterial Ulcer" value="arterial ulcer" />
+        <RadioButton.Item label="Venous Ulcer" value="Venous Ulcer" />
+        <RadioButton.Item label="Arterial Ulcer" value="Arterial Ulcer" />
         <RadioButton.Item
           label="Diabetic Foot Ulcer"
-          value="diabetic foot ulcer"
+          value="Diabetic Foot Ulcer"
         />
-        <RadioButton.Item label="Pressure Ulcer" value="pressure ulcer" />
-        <RadioButton.Item label="Infectious Wound" value="infectious wound" />
-        <RadioButton.Item label="Ischemic Wound" value="ischemic wound" />
-        <RadioButton.Item label="Surgical Wounds" value="surgical wounds" />
+        <RadioButton.Item label="Pressure Ulcer" value="Pressure Ulcer" />
+        <RadioButton.Item label="Infectious Wound" value="Infectious Wound" />
+        <RadioButton.Item label="Ischemic Wound" value="Ischemic Wound" />
+        <RadioButton.Item label="Surgical Wounds" value="Surgical Wounds" />
         <RadioButton.Item
           label="Radiation Poisoning Wounds"
-          value="radiation poisoning wounds"
+          value="Radiation Poisoning Wounds"
         />
+      </View>
+    );
+  };
+
+  /**
+   * Method returns Yes or No Options
+   */
+  const yesNoOptions = () => {
+    return (
+      <View>
+        <RadioButton.Item label="Yes" value={true} />
+        <RadioButton.Item label="No" value={false} />
       </View>
     );
   };
@@ -75,6 +95,8 @@ const DialogWithRadioButtons = ({
       return genderOptions();
     } else if (dialogOptions === "woundTypes") {
       return woundTypeOptions();
+    } else if (dialogOptions === "yesOrNo") {
+      return yesNoOptions();
     } else {
       return null;
     }
@@ -107,19 +129,34 @@ const DialogWithRadioButtons = ({
     }
   });
 
+  /**
+   * Method checks the data type of selectedValue and returns a diplayable version of the value
+   */
+  const getSelectedValueToDisplay = (value) => {
+    if (typeof selectedValue === "boolean") {
+      return value ? "Yes" : "No";
+    } else {
+      return selectedValue;
+    }
+  };
+
   return (
     <View>
       <TouchableOpacity onPress={showDialog} disabled={!isEditMode}>
         <TextInput
           outlineColor={"black"}
-          value={selectedValue}
+          value={getSelectedValueToDisplay(selectedValue)}
           mode="outlined"
           editable={false}
           right={ShowTextInputIcon()}
         />
       </TouchableOpacity>
       <Portal>
-        <Dialog style={styles.dialogBox} visible={visible} onDismiss={hideDialog}>
+        <Dialog
+          style={styles.dialogBox}
+          visible={visible}
+          onDismiss={hideDialog}
+        >
           <Dialog.Title>Select a value</Dialog.Title>
           <Dialog.Content>
             <RadioButton.Group
@@ -130,7 +167,7 @@ const DialogWithRadioButtons = ({
             </RadioButton.Group>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
+            <Button onPress={handleCancelButtonPress}>Cancel</Button>
             <Button onPress={handleOkButtonPress}>Ok</Button>
           </Dialog.Actions>
         </Dialog>
@@ -144,5 +181,5 @@ export default DialogWithRadioButtons;
 const styles = StyleSheet.create({
   dialogBox: {
     borderRadius: 20,
-  }
+  },
 });

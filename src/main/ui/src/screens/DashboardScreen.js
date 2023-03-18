@@ -25,7 +25,7 @@ export default function DashboardScreen({ navigation }) {
       <SafeAreaView style={styles.welcomeTextArea}>
         <Text style={styles.welcomeText}>Hello, {displayName}!</Text>
       </SafeAreaView>
-      
+
       <SafeAreaView style={styles.optionsArea}>
         <SafeAreaView style={styles.row}>
           <TouchableOpacity
