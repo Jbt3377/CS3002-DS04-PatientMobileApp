@@ -16,7 +16,6 @@ public class WoundController {
 
     @PostMapping("/create")
     public String createWound(@RequestBody Wound wound) {
-        System.out.println("Endpoint reached");
         return woundService.createWound(wound);
     }
 
