@@ -15,8 +15,9 @@ public class WoundController {
     private WoundService woundService;
 
     @PostMapping("/create")
-    public String createWound(@RequestBody Wound newWound) {
-        return woundService.createWound(newWound);
+    public String createWound(@RequestBody Wound wound) {
+        System.out.println("Endpoint reached");
+        return woundService.createWound(wound);
     }
 
     @GetMapping("/getWound/{woundId}")
@@ -24,9 +25,9 @@ public class WoundController {
         return woundService.getWound(woundId);
     }
 
-    @GetMapping("/findWounds/{patientId}")
-    public List<Wound> findWounds(@PathVariable String patientId) {
-        return woundService.findWounds(patientId);
+    @GetMapping("/findWounds/{uid}")
+    public List<Wound> findWounds(@PathVariable String uid) {
+        return woundService.findWoundsByUid(uid);
     }
 
     @PutMapping("/update/{woundId}")

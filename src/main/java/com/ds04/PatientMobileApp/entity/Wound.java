@@ -2,140 +2,157 @@ package com.ds04.PatientMobileApp.entity;
 
 import com.google.cloud.firestore.annotation.DocumentId;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.joda.time.DateTime;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
-
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Schema
 public class Wound {
 
     @DocumentId
-    private String WoundId;
-    private String PatientId;
-    private String WoundType;
-    private String WoundLocationOnBody;
-    private DateTime InjuryDateTime;
-    private String PlaceOfInjury;
-    private double PlaceOfInjuryLatitude;
-    private double PlaceOfInjuryLongitude;
-    private String InjuryIntent;
-    private String InjuryActivityStatus;
-    private String InjuryActivityType;
-    private String InjuryMechanism;
-    private String InjuryAlcoholOrDrugInvolvement;
-    private String AssaultLocationDescription;
+    private String woundId;
+    private String uid;
+    private String woundType;
+    private String woundLocationOnBody;
+    private Date injuryDate;
+    private String placeOfInjury;
+    private double placeOfInjuryLatitude;
+    private double placeOfInjuryLongitude;
+    private String injuryIntent;
+    private String injuryActivityStatus;
+    private String injuryActivityType;
+    private List<String> injuryMechanism;
+    private boolean injuryDrugOrAlcoholInvolvement;
+    private String assaultLocationDescription;
 
     public String getWoundId() {
-        return WoundId;
+        return woundId;
     }
 
     public void setWoundId() {
-        WoundId = UUID.randomUUID().toString();
+        woundId = UUID.randomUUID().toString();
     }
 
-    public String getPatientId() {
-        return PatientId;
+    public String getUid() {
+        return uid;
     }
 
-    public void setPatientId(String patientId) {
-        PatientId = patientId;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getWoundType() {
-        return WoundType;
+        return woundType;
     }
 
     public void setWoundType(String woundType) {
-        WoundType = woundType;
+        this.woundType = woundType;
     }
 
     public String getWoundLocationOnBody() {
-        return WoundLocationOnBody;
+        return woundLocationOnBody;
     }
 
     public void setWoundLocationOnBody(String woundLocationOnBody) {
-        WoundLocationOnBody = woundLocationOnBody;
+        this.woundLocationOnBody = woundLocationOnBody;
     }
 
-    public DateTime getInjuryDateTime() {
-        return InjuryDateTime;
+    public Date getInjuryDate() {
+        return injuryDate;
     }
 
-    public void setInjuryDateTime(DateTime injuryDateTime) {
-        InjuryDateTime = injuryDateTime;
+    public void setInjuryDate(Date injuryDate) {
+        this.injuryDate = injuryDate;
     }
 
     public String getPlaceOfInjury() {
-        return PlaceOfInjury;
+        return placeOfInjury;
     }
 
     public void setPlaceOfInjury(String placeOfInjury) {
-        PlaceOfInjury = placeOfInjury;
+        this.placeOfInjury = placeOfInjury;
     }
 
     public double getPlaceOfInjuryLatitude() {
-        return PlaceOfInjuryLatitude;
+        return placeOfInjuryLatitude;
     }
 
     public void setPlaceOfInjuryLatitude(double placeOfInjuryLatitude) {
-        PlaceOfInjuryLatitude = placeOfInjuryLatitude;
+        this.placeOfInjuryLatitude = placeOfInjuryLatitude;
     }
 
     public double getPlaceOfInjuryLongitude() {
-        return PlaceOfInjuryLongitude;
+        return placeOfInjuryLongitude;
     }
 
     public void setPlaceOfInjuryLongitude(double placeOfInjuryLongitude) {
-        PlaceOfInjuryLongitude = placeOfInjuryLongitude;
+        this.placeOfInjuryLongitude = placeOfInjuryLongitude;
     }
 
     public String getInjuryIntent() {
-        return InjuryIntent;
+        return injuryIntent;
     }
 
     public void setInjuryIntent(String injuryIntent) {
-        InjuryIntent = injuryIntent;
+        this.injuryIntent = injuryIntent;
     }
 
     public String getInjuryActivityStatus() {
-        return InjuryActivityStatus;
+        return injuryActivityStatus;
     }
 
     public void setInjuryActivityStatus(String injuryActivityStatus) {
-        InjuryActivityStatus = injuryActivityStatus;
+        this.injuryActivityStatus = injuryActivityStatus;
     }
 
     public String getInjuryActivityType() {
-        return InjuryActivityType;
+        return injuryActivityType;
     }
 
     public void setInjuryActivityType(String injuryActivityType) {
-        InjuryActivityType = injuryActivityType;
+        this.injuryActivityType = injuryActivityType;
     }
 
-    public String getInjuryMechanism() {
-        return InjuryMechanism;
+    public List<String> getInjuryMechanism() {
+        return injuryMechanism;
     }
 
-    public void setInjuryMechanism(String injuryMechanism) {
-        InjuryMechanism = injuryMechanism;
+    public void setInjuryMechanism(List<String> injuryMechanism) {
+        this.injuryMechanism = injuryMechanism;
     }
 
-    public String getInjuryAlcoholOrDrugInvolvement() {
-        return InjuryAlcoholOrDrugInvolvement;
+    public boolean getInjuryDrugOrAlcoholInvolvement() {
+        return injuryDrugOrAlcoholInvolvement;
     }
 
-    public void setInjuryAlcoholOrDrugInvolvement(String injuryAlcoholOrDrugInvolvement) {
-        InjuryAlcoholOrDrugInvolvement = injuryAlcoholOrDrugInvolvement;
+    public void setInjuryDrugOrAlcoholInvolvement(boolean injuryDrugOrAlcoholInvolvement) {
+        this.injuryDrugOrAlcoholInvolvement = injuryDrugOrAlcoholInvolvement;
     }
 
     public String getAssaultLocationDescription() {
-        return AssaultLocationDescription;
+        return assaultLocationDescription;
     }
 
     public void setAssaultLocationDescription(String assaultLocationDescription) {
-        AssaultLocationDescription = assaultLocationDescription;
+        this.assaultLocationDescription = assaultLocationDescription;
+    }
+
+    public HashMap<String, Object> convertToMap() {
+        HashMap<String, Object> docData = new HashMap<>();
+
+        docData.put("uid", this.uid);
+        docData.put("woundType", this.woundType);
+        docData.put("woundLocationOnBody", this.woundLocationOnBody);
+        docData.put("injuryDate", this.injuryDate);
+        docData.put("placeOfInjury", this.placeOfInjury);
+        docData.put("injuryIntent", this.injuryIntent);
+        docData.put("injuryActivityStatus", this.injuryActivityStatus);
+        docData.put("injuryActivityType", this.injuryActivityType);
+        docData.put("injuryMechanism", this.injuryMechanism);
+        docData.put("injuryDrugOrAlcoholInvolvement", this.injuryDrugOrAlcoholInvolvement);
+        docData.put("assaultLocationDescription", this.assaultLocationDescription);
+        return docData;
     }
 }

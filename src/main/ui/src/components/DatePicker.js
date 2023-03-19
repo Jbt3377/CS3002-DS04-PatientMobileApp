@@ -4,6 +4,7 @@ import { SafeAreaView, TextInput } from "react-native-paper";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import { formatDate } from "../actions/SharedFunctions";
 
 const globalStyle = require("../../Style");
 
@@ -14,20 +15,6 @@ const DatePicker = ({ dateValue, setDateValue, isEditMode }) => {
   const showDatePicker = () => {
     Keyboard.dismiss();
     setDatePickerVisible(true);
-  };
-
-  /**
-   * Method converts timestamp to DD/MM/YYYY format
-   */
-  const formatDate = (tempDate) => {
-    const year = tempDate.getFullYear();
-    let month = tempDate.getMonth() + 1;
-    let day = tempDate.getDate();
-
-    if (day < 10) day = "0" + day;
-    if (month < 10) month = "0" + month;
-
-    return day + "/" + month + "/" + year;
   };
 
   const handleDateSelected = (event, value) => {

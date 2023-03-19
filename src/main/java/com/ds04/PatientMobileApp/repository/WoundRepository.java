@@ -19,7 +19,7 @@ public class WoundRepository {
 
     public String create(Wound wound) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId()).set(wound);
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(wound.getWoundId()).set(wound.convertToMap());
         return future.get().getUpdateTime().toString();
     }
 
@@ -35,9 +35,9 @@ public class WoundRepository {
         }
     }
 
-    public List<Wound> find(String patientId) throws ExecutionException, InterruptedException {
+    public List<Wound> findByUid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("patientId", patientId).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         ArrayList<Wound> results = new ArrayList<>();
@@ -48,11 +48,8 @@ public class WoundRepository {
     }
 
     public String update(String woundId, Wound wound) throws ExecutionException, InterruptedException {
-        ObjectMapper oMapper = new ObjectMapper();
-        Map<String, Object> map = oMapper.convertValue(wound, Map.class);
-
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundId).update(map);
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundId).update(wound.convertToMap());
         return future.get().getUpdateTime().toString();
     }
 

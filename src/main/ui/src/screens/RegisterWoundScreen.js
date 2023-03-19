@@ -29,23 +29,6 @@ export default function RegisterWoundScreen({ navigation }) {
     asaultLocationDescription: "",
   });
 
-  const [showAsaultLocationDescription, setShowAsaultLocationDescription] =
-    useState(false);
-
-  /**
-   * onChange Method passed into DialogWithRadioButtons Component for InjuryAlcoholOrDrugInvolvement
-   */
-  const onInjuryAlcoholOrDrugInvolvementChange = (value) => {
-    console.log(value);
-    setWoundProperty("injuryDrugOrAlcoholInvolvement", value);
-
-    if (wound.injuryDrugOrAlcoholInvolvement) {
-      setShowAsaultLocationDescription(true);
-    } else {
-      setShowAsaultLocationDescription(false);
-    }
-  };
-
   /**
    * onChange Method passed to DatePicker Component to update the injuryDate Wound Property
    */
@@ -61,7 +44,7 @@ export default function RegisterWoundScreen({ navigation }) {
   };
 
   const handleSaveWound = async () => {
-    console.log("Pressed");
+    setIsButtonDisabled(true);
 
     // Check validity of Wound properties
     if (!woundModelIsValid()) {
@@ -69,34 +52,34 @@ export default function RegisterWoundScreen({ navigation }) {
       return null;
     }
 
-    console.log("Sending POST Request");
-
-    // Construct Body
-    const initialWoundProps = {
-      uid: auth.currentUser.uid,
-      woundType: wound.woundType,
-      woundLocationOnBody: wound.woundLocationOnBody,
-      injuryDate: wound.injuryDate,
-      placeOfInjury: wound.placeOfInjury,
-      injuryIntent: wound.injuryIntent,
-      injuryActivityStatus: wound.injuryActivityStatus,
-      injuryActivityType: wound.injuryActivityType,
-      injuryMechanism: wound.injuryMechanism,
-      injuryDrugOrAlcoholInvolvement: wound.injuryDrugOrAlcoholInvolvement,
-      asaultLocationDescription: wound.asaultLocationDescription,
-    };
-
     // POST Request Action
     await fetch(REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/wound/create", {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ initialWoundProps }),
+      body: JSON.stringify({
+        uid: auth.currentUser.uid,
+        woundType: wound.woundType,
+        woundLocationOnBody: wound.woundLocationOnBody,
+        injuryDate: wound.injuryDate,
+        placeOfInjury: wound.placeOfInjury,
+        injuryIntent: wound.injuryIntent,
+        injuryActivityStatus: wound.injuryActivityStatus,
+        injuryActivityType: wound.injuryActivityType,
+        injuryMechanism: wound.injuryMechanism,
+        injuryDrugOrAlcoholInvolvement: wound.injuryDrugOrAlcoholInvolvement,
+        asaultLocationDescription: wound.asaultLocationDescription,
+      }),
     }).catch((error) => {
       alert("An error occured creating Wound: " + error.message);
     });
+
+    navigation.navigate("WoundSelectScreen");
+    setIsButtonDisabled(false);
   };
+
+  const setWoundInformation = () => {};
 
   return (
     <ScrollView
@@ -106,7 +89,9 @@ export default function RegisterWoundScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.dropDownComponentText}>Wound Type</Text>
+          <Text style={styles.dropDownComponentText}>
+            Wound Type<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <DialogWithRadioButtons
             dialogOptions={"woundTypes"}
             onSelectValue={(value) => setWoundProperty("woundType", value)}
@@ -116,7 +101,10 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Wound Location On Body</Text>
+          <Text style={styles.textComponentText}>
+            Wound Location On Body
+            <Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <TextInput
             style={styles.textComponent}
             outlineColor={"black"}
@@ -130,16 +118,22 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Injury Date</Text>
+          <Text style={styles.textComponentText}>
+            Injury Date<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <DatePicker
             dateValue={wound.injuryDate}
-            setDateValue={(value) => setInjuryDateProperty(value)}
+            setDateValue={(value) =>
+              setWoundProperty("injuryDate", new Date(value))
+            }
             isEditMode={true}
           />
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Place of Injury</Text>
+          <Text style={styles.textComponentText}>
+            Place of Injury<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <TextInput
             style={styles.textComponent}
             outlineColor={"black"}
@@ -151,7 +145,9 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Injury Intent</Text>
+          <Text style={styles.textComponentText}>
+            Injury Intent<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <TextInput
             style={styles.textComponent}
             outlineColor={"black"}
@@ -163,7 +159,10 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Injury Activity Status</Text>
+          <Text style={styles.textComponentText}>
+            Injury Activity Status
+            <Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <TextInput
             style={styles.textComponent}
             outlineColor={"black"}
@@ -177,7 +176,9 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.textComponentText}>Injury Activity Type</Text>
+          <Text style={styles.textComponentText}>
+            Injury Activity Type<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <TextInput
             style={styles.textComponent}
             outlineColor={"black"}
@@ -191,7 +192,9 @@ export default function RegisterWoundScreen({ navigation }) {
         </SafeAreaView>
 
         <SafeAreaView style={styles.inputContainer}>
-          <Text style={styles.dropDownComponentText}>Injury Mechanism</Text>
+          <Text style={styles.dropDownComponentText}>
+            Injury Mechanism<Text style={styles.requiredAsterisk}> *</Text>
+          </Text>
           <DialogWithCheckboxes
             checkboxOptions={"injuryMechanisms"}
             onConfirmValues={(selectedValues) =>
@@ -205,18 +208,19 @@ export default function RegisterWoundScreen({ navigation }) {
         <SafeAreaView style={styles.inputContainer}>
           <Text style={styles.dropDownComponentText}>
             Injury Drug or Alcohol Involvement
+            <Text style={styles.requiredAsterisk}> *</Text>
           </Text>
           <DialogWithRadioButtons
             dialogOptions={"yesOrNo"}
             onSelectValue={(value) =>
-              onInjuryAlcoholOrDrugInvolvementChange(value)
+              setWoundProperty("injuryDrugOrAlcoholInvolvement", value)
             }
             currentValue={wound.injuryDrugOrAlcoholInvolvement}
             isEditMode={true}
           />
         </SafeAreaView>
 
-        {showAsaultLocationDescription && (
+        {wound.injuryDrugOrAlcoholInvolvement && (
           <SafeAreaView style={styles.inputContainer}>
             <Text style={styles.textComponentText}>
               Assault Location Description
@@ -242,6 +246,7 @@ export default function RegisterWoundScreen({ navigation }) {
             containerColor={"darkseagreen"}
             size={40}
             onPress={() => handleSaveWound()}
+            disabled={isButtonDisabled}
           />
         </SafeAreaView>
       </SafeAreaView>
@@ -267,6 +272,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   textComponent: {},
+  requiredAsterisk: {
+    fontSize: 12,
+    color: "red",
+  },
   datePickerContainer: {
     flexDirection: "row",
     alignItems: "center",

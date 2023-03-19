@@ -40,9 +40,9 @@ public class WoundService {
         }
     }
 
-    public List<Wound> findWounds(String patientId){
+    public List<Wound> findWoundsByUid(String uid){
         try {
-            return woundRepository.find(patientId);
+            return woundRepository.findByUid(uid);
         } catch (Exception e) {
             e.printStackTrace();
             return null; // TODO: Implement Exception Handling

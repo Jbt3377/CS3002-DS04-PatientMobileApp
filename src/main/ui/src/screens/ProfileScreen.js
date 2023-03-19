@@ -128,15 +128,6 @@ export default function ProfileScreen({ navigation }) {
       alert(error.message);
     });
 
-    const updatedPatientProps = {
-      uid: user.uid,
-      firstname: user.firstname,
-      surname: user.surname,
-      dob: user.dob,
-      gender: user.gender,
-      homeAddress: user.homeAddress,
-    };
-
     await fetch(
       REACT_APP_LOCAL_BACKEND_BASE_URL +
         "/api/patient/update/" +
@@ -146,7 +137,14 @@ export default function ProfileScreen({ navigation }) {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify(updatedPatientProps),
+        body: JSON.stringify({
+          uid: user.uid,
+          firstname: user.firstname,
+          surname: user.surname,
+          dob: user.dob,
+          gender: user.gender,
+          homeAddress: user.homeAddress,
+        }),
       }
     ).catch((error) => {
       console.log(error);
@@ -240,7 +238,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={globalStyle.textInputLabel}>Date of Birth</Text>
           <DatePicker
             dateValue={user.dob}
-            setDateValue={(value) => setDateOfBirthProperty(value)}
+            setDateValue={(value) => setUserProperty("dob", new Date(value))}
             isEditMode={isEditMode}
           />
         </SafeAreaView>

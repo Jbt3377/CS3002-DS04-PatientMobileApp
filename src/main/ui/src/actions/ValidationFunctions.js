@@ -13,7 +13,7 @@ export const isDateOrBoolPropValid = (prop) => {
 };
 
 export const isMultiSelectPropValid = (prop) => {
-  if (!prop || wound.injuryMechanism.length === 0) {
+  if (!prop || prop.length === 0) {
     return false;
   }
   return true;

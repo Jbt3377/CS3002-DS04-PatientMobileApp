@@ -21,7 +21,7 @@ public class PatientRepository {
 
     public String create(Patient patient) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(patient.getPatientId()).set(patient);
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(patient.getPatientId()).set(patient.convertToMap());
         return future.get().getUpdateTime().toString();
     }
 
