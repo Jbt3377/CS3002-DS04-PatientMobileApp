@@ -32,14 +32,26 @@ export default function WoundSelectScreen({ navigation }) {
       setLoading(false);
     };
 
-    fetchWounds();
+    fetchWounds().catch((error) => {
+      console.log("Error retrieving wound data: " + error)
+    });
+    
   }, []);
+
+  const handleWoundSelect = (woundId) => {
+    console.log("Wound Selected: " + woundId);
+  }
 
   const renderWoundList = () => {
     return wounds.map((wound) => {
       return (
-        <TouchableOpacity style={styles.woundContainer}>
+        <TouchableOpacity 
+          style={styles.woundContainer}
+          key={wound.woundId}
+          onPress={() => handleWoundSelect(wound.woundId)}
+        >
           <List.Item
+            key={wound.woundId}
             title={wound.woundType}
             description={wound.woundLocationOnBody}
             style={styles.listItem}
@@ -51,6 +63,14 @@ export default function WoundSelectScreen({ navigation }) {
       )
     })
   };
+
+  const renderLoading = () => {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <Text style={styles.loading}>...</Text>
+      </SafeAreaView>
+    )
+  }
 
   return (
     <SafeAreaView style={globalStyle.container}>
@@ -77,7 +97,7 @@ export default function WoundSelectScreen({ navigation }) {
       <KeyboardAwareScrollView style={styles.scrollableContainer}>
         <View style={styles.woundListContainer}>
           <List.Section>
-            {loading ? <Text>...</Text> : renderWoundList()}
+            {loading ? renderLoading() : renderWoundList()}
           </List.Section>
         </View>
       </KeyboardAwareScrollView>
@@ -139,6 +159,13 @@ const styles = StyleSheet.create({
   listItem: {
     paddingHorizontal: 10,
     marginBottom: 16,
-
+  },
+  loadingContainer: {
+    padding: 10,
+    alignItems: "center"
+  },
+  loading: {
+    fontSize: 40,
+    color: "white"
   },
 });

@@ -86,6 +86,9 @@ export default function WoundCaptureScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Camera style={styles.camera} type={type} ref={cameraRef}>
+        <SafeAreaView>
+          
+        </SafeAreaView>
         <SafeAreaView style={styles.btnContainer}>
           <TouchableOpacity style={styles.btn} onPress={takePic}>
             <IonIcon style={styles.btnIcon} name="camera-outline" size={30} />
