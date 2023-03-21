@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 public class FirebaseInitializer {
 
     @PostConstruct
-    public void initiaize() {
+    public void initialize() {
         try {
             FileInputStream serviceAccount = new FileInputStream("./serviceAccountKey.json");
 

@@ -18,7 +18,7 @@ public class WoundCaptureController {
     private WoundCaptureService woundCaptureService;
 
     @PostMapping("/create")
-    public String createWound(@RequestBody WoundCapture woundCapture) {
+    public String createWoundCapture(@RequestBody WoundCapture woundCapture) {
         return woundCaptureService.createWoundCapture(woundCapture);
     }
 
