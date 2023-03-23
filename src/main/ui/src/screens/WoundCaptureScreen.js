@@ -10,13 +10,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
-import { MediaLibrary } from "expo";
 
 export default function WoundCaptureScreen({ navigation }) {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [photo, setPhoto] = useState();
-  const [type, setType] = useState(CameraType.back);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+  const [isFlashEnabled, setIsFlashEnabled] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   /**
@@ -44,9 +44,16 @@ export default function WoundCaptureScreen({ navigation }) {
    */
   const toggleCameraType = () => {
     setIsButtonDisabled(true);
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    );
+    setIsFrontCamera(!isFrontCamera);
+    setIsButtonDisabled(false);
+  };
+
+  /**
+   * Method toggles flash on and off
+   */
+  const toggleFlash = () => {
+    setIsButtonDisabled(true);
+    setIsFlashEnabled(!isFlashEnabled);
     setIsButtonDisabled(false);
   };
 
@@ -66,6 +73,9 @@ export default function WoundCaptureScreen({ navigation }) {
     setIsButtonDisabled(false);
   };
 
+  /**
+   * Method resets the current photo
+   */
   const handleDiscardPicture = () => {
     setIsButtonDisabled(true);
     setPhoto(undefined);
@@ -77,11 +87,14 @@ export default function WoundCaptureScreen({ navigation }) {
     return (
       <SafeAreaView style={styles.container}>
         <ImageBackground
-          style={styles.imageBackground}
+          style={styles.pictureBackground}
           source={{ uri: "data:image/jpg;base64," + photo.base64 }}
         >
           <SafeAreaView style={styles.previewModeBtnContainer}>
-            <TouchableOpacity style={styles.btn} disabled={isButtonDisabled}>
+            <TouchableOpacity
+              style={styles.mediumBtn}
+              disabled={isButtonDisabled}
+            >
               <IonIcon
                 style={styles.btnIcon}
                 name="checkmark-circle-outline"
@@ -90,7 +103,7 @@ export default function WoundCaptureScreen({ navigation }) {
               <Text style={styles.btnText}>Confirm</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.btn}
+              style={styles.mediumBtn}
               disabled={isButtonDisabled}
               onPress={() => handleDiscardPicture()}
             >
@@ -107,39 +120,69 @@ export default function WoundCaptureScreen({ navigation }) {
     );
   }
 
+  const flashBtn = {
+    backgroundColor: isFlashEnabled ? "grey" : "white",
+    width: 50,
+    height: 50,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  const cameraTypeBtn = {
+    backgroundColor: isFrontCamera ? "grey" : "white",
+    width: 50,
+    height: 50,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
   // Capture Mode
   return (
     <SafeAreaView style={styles.container}>
-      <Camera style={styles.camera} type={type} ref={cameraRef} ratio={"16:9"}>
-        <SafeAreaView style={styles.qrCodeTextContainer}>
-          <View style={styles.qrCodeInstruction}>
-            <Text style={styles.qrText}>Position QR Code within Box</Text>
+      <Camera
+        style={styles.cameraBackground}
+        type={isFrontCamera ? CameraType.front : CameraType.back}
+        flashMode={
+          isFlashEnabled
+            ? Camera.Constants.FlashMode.torch
+            : Camera.Constants.FlashMode.off
+        }
+        ref={cameraRef}
+        ratio={"16:9"}
+      >
+        <SafeAreaView style={styles.qrCodeInstructionContainer}>
+          <View style={styles.qrCodeInstructionShape}>
+            <Text style={styles.qrCodeInstructionText}>Position QR Code within Box</Text>
           </View>
         </SafeAreaView>
 
-        <SafeAreaView style={styles.qrCodeContainer}>
+        <SafeAreaView style={styles.qrCodeOverlayContainer}>
           <View style={styles.qrCodeOverlay} />
         </SafeAreaView>
         <SafeAreaView style={styles.captureModeBtnContainer}>
           <TouchableOpacity
-            style={styles.btn}
+            style={cameraTypeBtn}
+            disabled={isButtonDisabled}
+            onPress={() => toggleCameraType()}
+          >
+            <IonIcon name="camera-reverse-outline" size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.largeBtn}
             disabled={isButtonDisabled}
             onPress={() => handleTakePicture()}
           >
             <IonIcon style={styles.btnIcon} name="camera-outline" size={30} />
-            <Text style={styles.btnText}>Take Pic</Text>
+            <Text style={styles.btnText}>Take Picture</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.btn}
+            style={flashBtn}
             disabled={isButtonDisabled}
-            onPress={() => toggleCameraType()}
+            onPress={() => toggleFlash()}
           >
-            <IonIcon
-              style={styles.btnIcon}
-              name="camera-reverse-outline"
-              size={30}
-            />
-            <Text style={styles.btnText}>Reverse</Text>
+            <IonIcon name="flashlight-outline" size={30} />
           </TouchableOpacity>
         </SafeAreaView>
       </Camera>
@@ -151,11 +194,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  camera: {
+  cameraBackground: {
     flex: 1,
     justifyContent: "flex-end",
   },
-  qrCodeContainer: {
+  qrCodeInstructionContainer: {
+    marginTop: 60,
+    alignItems: "center",
+  },
+  qrCodeInstructionShape: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: "grey",
+    width: "70%",
+    height: 50,
+    marginBottom: 80,
+  },
+  qrCodeInstructionText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  qrCodeOverlayContainer: {
     flex: 10,
     padding: 20,
     alignItems: "center",
@@ -176,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     marginBottom: 40,
   },
-  imageBackground: {
+  pictureBackground: {
     flex: 1,
     justifyContent: "flex-end",
   },
@@ -185,7 +246,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     marginBottom: 35,
   },
-  btn: {
+  largeBtn: {
+    backgroundColor: "white",
+    width: 200,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  mediumBtn: {
     backgroundColor: "white",
     width: 150,
     height: 50,
@@ -195,33 +265,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   btnText: {
-    flex: 3,
     justifyContent: "flex-start",
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
   },
   btnIcon: {
-    flex: 1,
     padding: 5,
     marginHorizontal: "5%",
-  },
-  qrCodeTextContainer: {
-    marginTop: 60,
-    alignItems: "center",
-  },
-  qrCodeInstruction: {
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    backgroundColor: "grey",
-    width: "70%",
-    height: 50,
-    marginBottom: 80,
-  },
-  qrText: {
-    color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });

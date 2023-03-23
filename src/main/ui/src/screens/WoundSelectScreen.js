@@ -101,11 +101,10 @@ export default function WoundSelectScreen({ navigation }) {
           <Text style={styles.lastCapture}>Last Capture</Text>
         </View>
         <View style={styles.dividerContainer}>
-          <Divider style={styles.divider}/>
+          <Divider style={styles.divider} />
         </View>
-        
       </View>
-      
+
       <KeyboardAwareScrollView style={styles.scrollableContainer}>
         <View style={styles.woundListContainer}>
           <List.Section>
@@ -181,11 +180,11 @@ const styles = StyleSheet.create({
     color: "white",
   },
   dividerContainer: {
-    alignItems: "center"
+    alignItems: "center",
   },
   divider: {
     backgroundColor: "white",
     width: "90%",
     marginTop: 10,
-  }
+  },
 });
