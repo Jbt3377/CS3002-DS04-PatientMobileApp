@@ -2,7 +2,6 @@
  * Method converts timestamp to DD/MM/YYYY format
  */
 export const formatDate = (tempDate) => {
-    
   const year = tempDate.getFullYear();
   let month = tempDate.getMonth() + 1;
   let day = tempDate.getDate();

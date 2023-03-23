@@ -1,6 +1,12 @@
 import { Divider, List } from "react-native-paper";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -13,7 +19,7 @@ const globalStyle = require("../../Style");
 export default function WoundSelectScreen({ navigation }) {
   const [wounds, setWounds] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchWounds = async () => {
       const response = await fetch(
@@ -33,19 +39,19 @@ export default function WoundSelectScreen({ navigation }) {
     };
 
     fetchWounds().catch((error) => {
-      console.log("Error retrieving wound data: " + error)
+      console.log("Error retrieving wound data: " + error);
+      alert("Couldn't retrieve wound data: " + error.message);
     });
-    
   }, []);
 
   const handleWoundSelect = (woundId) => {
     console.log("Wound Selected: " + woundId);
-  }
+  };
 
   const renderWoundList = () => {
     return wounds.map((wound) => {
       return (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.woundContainer}
           key={wound.woundId}
           onPress={() => handleWoundSelect(wound.woundId)}
@@ -59,18 +65,17 @@ export default function WoundSelectScreen({ navigation }) {
             right={() => <Text>{formatDate(new Date(wound.injuryDate))}</Text>}
           />
         </TouchableOpacity>
-        
-      )
-    })
+      );
+    });
   };
 
-  const renderLoading = () => {
+  const renderNoDataText = () => {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <Text style={styles.loading}>...</Text>
       </SafeAreaView>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={globalStyle.container}>
@@ -90,14 +95,21 @@ export default function WoundSelectScreen({ navigation }) {
         </TouchableOpacity>
       </SafeAreaView>
 
-      <View style={styles.woundListHeader}>
-        <Text style={styles.woundDetails}>Wound Details</Text>
-        <Text style={styles.lastCapture}>Last Capture</Text>
+      <View>
+        <View style={styles.woundListHeader}>
+          <Text style={styles.woundDetails}>Wound Details</Text>
+          <Text style={styles.lastCapture}>Last Capture</Text>
+        </View>
+        <View style={styles.dividerContainer}>
+          <Divider style={styles.divider}/>
+        </View>
+        
       </View>
+      
       <KeyboardAwareScrollView style={styles.scrollableContainer}>
         <View style={styles.woundListContainer}>
           <List.Section>
-            {loading ? renderLoading() : renderWoundList()}
+            {loading ? renderNoDataText() : renderWoundList()}
           </List.Section>
         </View>
       </KeyboardAwareScrollView>
@@ -148,7 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   woundDetails: {
-    paddingLeft: 15,
+    paddingLeft: 25,
   },
   lastCapture: {
     paddingRight: 30,
@@ -162,10 +174,18 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     padding: 10,
-    alignItems: "center"
+    alignItems: "center",
   },
   loading: {
-    fontSize: 40,
-    color: "white"
+    fontSize: 20,
+    color: "white",
   },
+  dividerContainer: {
+    alignItems: "center"
+  },
+  divider: {
+    backgroundColor: "white",
+    width: "90%",
+    marginTop: 10,
+  }
 });
