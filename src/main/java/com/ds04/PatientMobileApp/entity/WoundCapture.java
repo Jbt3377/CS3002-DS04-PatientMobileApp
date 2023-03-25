@@ -17,6 +17,13 @@ public class WoundCapture {
     private double c02Value;
     private boolean isInfected;
 
+    public WoundCapture(String uid, String woundId, Date captureDate, MultipartFile photo){
+        this.uid = uid;
+        this.woundId = woundId;
+        this.captureDate = captureDate;
+        this.photo = photo;
+    }
+
     public String getWoundCaptureId() {
         return woundCaptureId;
     }

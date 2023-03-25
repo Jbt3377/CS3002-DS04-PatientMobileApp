@@ -90,7 +90,7 @@ export default function WoundCaptureScreen({ navigation }) {
     let formData = new FormData();
     formData.append("uid", auth.currentUser.uid);
     formData.append("woundId", "test");
-    formData.append("captureDate", new Date());
+    formData.append("captureDate", (new Date()).toString());
     formData.append(
       "photo", {
         uri: photo.uri,
@@ -108,18 +108,40 @@ export default function WoundCaptureScreen({ navigation }) {
       {
         method: "POST",
         headers: {
-          "Content-Type": "multipart/form-data",
+          "content-type": "multipart/form-data",
         },
         body: formData,
       }
     )
-      .then(response => {
-        console.log('Response:', response);
+      .catch(err => {
+          console.log(err);
       })
-      .catch((error) => {
-        console.log('Error: ' + error.message);
-      });
 
+    // await fetch(
+    //     REACT_APP_LOCAL_BACKEND_BASE_URL +
+    //       "/api/woundCapture/create",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "content-type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         uid: auth.currentUser.uid,
+    //         woundId: "test",
+    //         captureDate: new Date(),
+            
+
+    //       }),
+    //     }
+    //   )
+    //     .then(response => {
+    //       console.log('Response:', response);
+    //     })
+    //     .catch((error) => {
+    //       console.log('Error: ' + error.message);
+    //     });
+
+    console.log("Complete");
     setIsButtonDisabled(false);
   };
 

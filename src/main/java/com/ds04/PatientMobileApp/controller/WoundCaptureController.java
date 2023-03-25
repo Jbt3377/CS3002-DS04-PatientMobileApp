@@ -5,8 +5,11 @@ import com.ds04.PatientMobileApp.entity.WoundCapture;
 import com.ds04.PatientMobileApp.service.WoundCaptureService;
 import com.ds04.PatientMobileApp.service.WoundService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/woundCapture/")
@@ -16,17 +19,16 @@ public class WoundCaptureController {
     private WoundCaptureService woundCaptureService;
 
     @PostMapping("/create")
-    public String createWoundCapture(
+    public ResponseEntity createWoundCapture(
             @RequestParam("uid") String uid,
             @RequestParam("woundId") String woundId,
+            @RequestParam("captureDate") Date captureDate,
             @RequestPart("photo") MultipartFile photo) {
 
-        System.out.println("Endpoint hit!");
-        System.out.println("uid: " + uid);
-        System.out.println("woundId: " + woundId);
-        System.out.println("photo name: " + photo.getName());
-        return "success";
-//        return woundCaptureService.createWoundCapture(woundCapture);
+
+        WoundCapture woundCapture = new WoundCapture(uid, woundId, captureDate, photo);
+        String response = woundCaptureService.createWoundCapture(woundCapture);
+        return ResponseEntity.ok().build();
     }
 
 }
