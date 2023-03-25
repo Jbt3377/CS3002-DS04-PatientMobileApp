@@ -1,6 +1,7 @@
 package com.ds04.PatientMobileApp.entity;
 
 import com.google.cloud.firestore.annotation.DocumentId;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class WoundCapture {
     private String woundCaptureId;
     private String uid;
     private String woundId;
+    private MultipartFile photo;
     private Date captureDate;
     private double c02Value;
     private boolean isInfected;
@@ -61,5 +63,13 @@ public class WoundCapture {
 
     public void setInfected(boolean infected) {
         isInfected = infected;
+    }
+
+    public MultipartFile getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(MultipartFile photo) {
+        this.photo = photo;
     }
 }

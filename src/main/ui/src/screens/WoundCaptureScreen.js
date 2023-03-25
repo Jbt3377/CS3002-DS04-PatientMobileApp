@@ -10,6 +10,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
+import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
+import { auth } from "../../Firebase";
 
 export default function WoundCaptureScreen({ navigation }) {
   let cameraRef = useRef();
@@ -82,6 +84,45 @@ export default function WoundCaptureScreen({ navigation }) {
     setIsButtonDisabled(false);
   };
 
+  const handleSendPicture = async () => {
+    setIsButtonDisabled(true);
+
+    let formData = new FormData();
+    formData.append("uid", auth.currentUser.uid);
+    formData.append("woundId", "test");
+    formData.append("captureDate", new Date());
+    formData.append(
+      "photo", {
+        uri: photo.uri,
+        type: "image/jpeg",
+        name: "photo.jpg"
+      }
+    );
+
+    console.log("Form Data:")
+    console.log(formData);
+
+    await fetch(
+      REACT_APP_LOCAL_BACKEND_BASE_URL +
+        "/api/woundCapture/create",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      }
+    )
+      .then(response => {
+        console.log('Response:', response);
+      })
+      .catch((error) => {
+        console.log('Error: ' + error.message);
+      });
+
+    setIsButtonDisabled(false);
+  };
+
   // Preview Mode
   if (photo) {
     return (
@@ -94,6 +135,7 @@ export default function WoundCaptureScreen({ navigation }) {
             <TouchableOpacity
               style={styles.mediumBtn}
               disabled={isButtonDisabled}
+              onPress={() => handleSendPicture()}
             >
               <IonIcon
                 style={styles.btnIcon}
