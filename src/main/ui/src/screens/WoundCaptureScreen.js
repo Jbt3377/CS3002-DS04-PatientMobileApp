@@ -117,30 +117,6 @@ export default function WoundCaptureScreen({ navigation }) {
           console.log(err);
       })
 
-    // await fetch(
-    //     REACT_APP_LOCAL_BACKEND_BASE_URL +
-    //       "/api/woundCapture/create",
-    //     {
-    //       method: "POST",
-    //       headers: {
-    //         "content-type": "application/json",
-    //       },
-    //       body: JSON.stringify({
-    //         uid: auth.currentUser.uid,
-    //         woundId: "test",
-    //         captureDate: new Date(),
-            
-
-    //       }),
-    //     }
-    //   )
-    //     .then(response => {
-    //       console.log('Response:', response);
-    //     })
-    //     .catch((error) => {
-    //       console.log('Error: ' + error.message);
-    //     });
-
     console.log("Complete");
     setIsButtonDisabled(false);
   };

@@ -46,6 +46,7 @@ export default function WoundSelectScreen({ navigation }) {
 
   const handleWoundSelect = (woundId) => {
     console.log("Wound Selected: " + woundId);
+    navigation.navigate("WoundScreen", { woundId: woundId});
   };
 
   const renderWoundList = () => {

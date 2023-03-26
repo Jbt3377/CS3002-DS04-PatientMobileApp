@@ -7,6 +7,7 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterWoundScreen from "./src/screens/RegisterWoundScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import WoundCaptureScreen from "./src/screens/WoundCaptureScreen";
+import WoundScreen from "./src/screens/WoundScreen";
 import WoundSelectScreen from "./src/screens/WoundSelectScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useTheme } from "react-native-paper";
@@ -54,6 +55,11 @@ export default function App() {
             name="RegisterWoundScreen"
             component={RegisterWoundScreen}
             options={{ title: "Register Wound" }}
+          />
+          <Stack.Screen
+            name="WoundScreen"
+            component={WoundScreen}
+            options={{ title: "Wound" }}
           />
           <Stack.Screen
             name="ProfileScreen"
