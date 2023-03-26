@@ -24,8 +24,8 @@ public class WoundCaptureService {
 
     public String createWoundCapture(WoundCapture woundCapture) {
         try {
-            
 
+            woundCaptureRepository.create(woundCapture);
             System.out.println("reached okay!");
             return "executed okay!";
         } catch (Exception e) {
