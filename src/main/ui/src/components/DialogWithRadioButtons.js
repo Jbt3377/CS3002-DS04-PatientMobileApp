@@ -118,7 +118,7 @@ const DialogWithRadioButtons = ({
    */
   useEffect(() => {
     if (isEditMode) {
-      if (currentValue && selectedValue === "") {
+      if (currentValue != null) {
         // If in Edit Mode AND there is an initial value AND the modal just opened,
         // set the selected value of the Modal to the current user prop
         setSelectedValue(currentValue);
@@ -127,7 +127,19 @@ const DialogWithRadioButtons = ({
       // Otherwise, reflect the current state of the prop in the Text Input
       setSelectedValue(currentValue);
     }
-  });
+  }, []);
+
+  const checkCurrentValueTypeAndFormatDependingOnType = (currentValue) => {
+    if (typeof currentValue == Boolean){
+      if(currentValue){
+        return "Yes";
+      } else {
+        return "No"
+      }
+    } else {
+      return currentValue;
+    }
+  }
 
   /**
    * Method checks the data type of selectedValue and returns a diplayable version of the value

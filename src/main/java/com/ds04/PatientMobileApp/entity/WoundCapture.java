@@ -1,9 +1,10 @@
 package com.ds04.PatientMobileApp.entity;
 
 import com.google.cloud.firestore.annotation.DocumentId;
-import org.springframework.web.multipart.MultipartFile;
+import com.google.cloud.storage.Blob;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class WoundCapture {
@@ -12,16 +13,17 @@ public class WoundCapture {
     private String woundCaptureId;
     private String uid;
     private String woundId;
-    private MultipartFile photo;
     private Date captureDate;
+    private String filename;
+
+    private Blob imageBlob;
     private double c02Value;
     private boolean isInfected;
 
-    public WoundCapture(String uid, String woundId, Date captureDate, MultipartFile photo){
+    public WoundCapture(String uid, String woundId, Date captureDate){
         this.uid = uid;
         this.woundId = woundId;
         this.captureDate = captureDate;
-        this.photo = photo;
     }
 
     public String getWoundCaptureId() {
@@ -56,6 +58,14 @@ public class WoundCapture {
         this.captureDate = captureDate;
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     public double getC02Value() {
         return c02Value;
     }
@@ -72,11 +82,23 @@ public class WoundCapture {
         isInfected = infected;
     }
 
-    public MultipartFile getPhoto() {
-        return photo;
+    public HashMap<String, Object> convertToMap() {
+        HashMap<String, Object> docData = new HashMap<>();
+
+        docData.put("uid", this.uid);
+        docData.put("woundId", this.woundId);
+        docData.put("captureDate", this.captureDate);
+        docData.put("filename", this.filename);
+        docData.put("c02Value", this.c02Value);
+        docData.put("isInfected", this.isInfected);
+        return docData;
     }
 
-    public void setPhoto(MultipartFile photo) {
-        this.photo = photo;
+    public Blob getImageBlob() {
+        return imageBlob;
+    }
+
+    public void setImageBlob(Blob imageBlob) {
+        this.imageBlob = imageBlob;
     }
 }

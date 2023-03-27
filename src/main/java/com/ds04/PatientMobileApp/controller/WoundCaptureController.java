@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/woundCapture/")
@@ -26,9 +27,20 @@ public class WoundCaptureController {
             @RequestPart("photo") MultipartFile photo) {
 
 
-        WoundCapture woundCapture = new WoundCapture(uid, woundId, captureDate, photo);
-        String response = woundCaptureService.createWoundCapture(woundCapture);
+        WoundCapture woundCapture = new WoundCapture(uid, woundId, captureDate);
+        String response = woundCaptureService.createWoundCapture(woundCapture, photo);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getWoundCapture/{woundCaptureId}")
+    public WoundCapture getWoundCapture(@PathVariable String woundCaptureId) {
+        return woundCaptureService.getWoundCapture(woundCaptureId);
+    }
+
+    @GetMapping("/findWoundCapturesByUser/{uid}")
+    public List<WoundCapture> findWoundCapturesByUser(@PathVariable String uid) {
+        System.out.println("Reached endpoint");
+        return woundCaptureService.findWoundCapturesByUser(uid);
     }
 
 }

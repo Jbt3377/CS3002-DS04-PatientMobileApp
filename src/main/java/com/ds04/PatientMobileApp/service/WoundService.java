@@ -19,7 +19,6 @@ public class WoundService {
 
     public String createWound(Wound newWound) {
         try {
-            // Check if WoundId provided
             if(newWound.getWoundId() == null){
                 newWound.setWoundId();
             }

@@ -90,32 +90,25 @@ export default function WoundCaptureScreen({ navigation }) {
     let formData = new FormData();
     formData.append("uid", auth.currentUser.uid);
     formData.append("woundId", "test");
-    formData.append("captureDate", (new Date()).toString());
-    formData.append(
-      "photo", {
-        uri: photo.uri,
-        type: "image/jpeg",
-        name: "photo.jpg"
-      }
-    );
+    formData.append("captureDate", new Date().toString());
+    formData.append("photo", {
+      uri: photo.uri,
+      type: "image/jpeg",
+      name: "photo.jpg",
+    });
 
-    console.log("Form Data:")
+    console.log("Form Data:");
     console.log(formData);
 
-    await fetch(
-      REACT_APP_LOCAL_BACKEND_BASE_URL +
-        "/api/woundCapture/create",
-      {
-        method: "POST",
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-        body: formData,
-      }
-    )
-      .catch(err => {
-          console.log(err);
-      })
+    await fetch(REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/woundCapture/create", {
+      method: "POST",
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+      body: formData,
+    }).catch((err) => {
+      console.log(err);
+    });
 
     console.log("Complete");
     setIsButtonDisabled(false);
@@ -194,7 +187,9 @@ export default function WoundCaptureScreen({ navigation }) {
       >
         <SafeAreaView style={styles.qrCodeInstructionContainer}>
           <View style={styles.qrCodeInstructionShape}>
-            <Text style={styles.qrCodeInstructionText}>Position QR Code within Box</Text>
+            <Text style={styles.qrCodeInstructionText}>
+              Position QR Code within Box
+            </Text>
           </View>
         </SafeAreaView>
 

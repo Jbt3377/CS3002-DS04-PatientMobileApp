@@ -26,22 +26,8 @@ export default function RegisterWoundScreen({ navigation }) {
     injuryActivityType: "",
     injuryMechanism: [],
     injuryDrugOrAlcoholInvolvement: false,
-    asaultLocationDescription: "",
+    assaultLocationDescription: "",
   });
-
-  /**
-   * onChange Method passed to DatePicker Component to update the injuryDate Wound Property
-   */
-  const setInjuryDateProperty = (value) => {
-    setWoundProperty("injuryDate", new Date(value));
-  };
-
-  /**
-   * onChange Method passed to DialogWithCheckboxes Component to update the injuryMechanism Wound Property
-   */
-  const setInjuryMechanismProperty = (selectedValues) => {
-    setWoundProperty("injuryMechanism", selectedValues);
-  };
 
   const handleSaveWound = async () => {
     setIsButtonDisabled(true);
@@ -69,7 +55,7 @@ export default function RegisterWoundScreen({ navigation }) {
         injuryActivityType: wound.injuryActivityType,
         injuryMechanism: wound.injuryMechanism,
         injuryDrugOrAlcoholInvolvement: wound.injuryDrugOrAlcoholInvolvement,
-        asaultLocationDescription: wound.asaultLocationDescription,
+        assaultLocationDescription: wound.assaultLocationDescription,
       }),
     }).catch((error) => {
       alert("An error occured creating Wound: " + error.message);
@@ -78,8 +64,6 @@ export default function RegisterWoundScreen({ navigation }) {
     navigation.navigate("WoundSelectScreen");
     setIsButtonDisabled(false);
   };
-
-  const setWoundInformation = () => {};
 
   return (
     <ScrollView
@@ -198,7 +182,7 @@ export default function RegisterWoundScreen({ navigation }) {
           <DialogWithCheckboxes
             checkboxOptions={"injuryMechanisms"}
             onConfirmValues={(selectedValues) =>
-              setInjuryMechanismProperty(selectedValues)
+              setWoundProperty("injuryMechanism", selectedValues)
             }
             currentValues={wound.injuryMechanism}
             isEditMode={true}
@@ -229,10 +213,10 @@ export default function RegisterWoundScreen({ navigation }) {
               style={styles.textComponent}
               outlineColor={"black"}
               placeholder={"Provide further details..."}
-              value={wound.asaultLocationDescription}
+              value={wound.assaultLocationDescription}
               mode="outlined"
               onChangeText={(value) =>
-                setWoundProperty("asaultLocationDescription", value)
+                setWoundProperty("assaultLocationDescription", value)
               }
             />
           </SafeAreaView>

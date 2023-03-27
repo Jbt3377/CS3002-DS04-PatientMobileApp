@@ -38,15 +38,19 @@ export default function WoundSelectScreen({ navigation }) {
       setLoading(false);
     };
 
-    fetchWounds().catch((error) => {
-      console.log("Error retrieving wound data: " + error);
-      alert("Couldn't retrieve wound data: " + error.message);
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchWounds().catch((error) => {
+        console.log("Error retrieving wound data: " + error);
+        alert("Couldn't retrieve wound data: " + error.message);
+      });
     });
+
+    return unsubscribe;
   }, []);
 
   const handleWoundSelect = (woundId) => {
     console.log("Wound Selected: " + woundId);
-    navigation.navigate("WoundScreen", { woundId: woundId});
+    navigation.navigate("WoundScreen", { woundId: woundId });
   };
 
   const renderWoundList = () => {

@@ -123,7 +123,7 @@ const DialogWithCheckboxes = ({
    */
   useEffect(() => {
     if (isEditMode) {
-      if (currentValues && selectedValues === []) {
+      if (currentValues != null) {
         // Condition: in edit mode AND no differing values selected to the already saved values
         // therefore pre-selected/saved valeus are displayed
         setSelectedValues(currentValues);
@@ -132,7 +132,7 @@ const DialogWithCheckboxes = ({
       // Condition: In display mode and textInput should reflect saved items
       setSelectedValues(currentValues);
     }
-  });
+  }, []);
 
   return (
     <View>

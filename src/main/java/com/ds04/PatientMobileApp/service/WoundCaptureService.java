@@ -2,14 +2,10 @@ package com.ds04.PatientMobileApp.service;
 
 import com.ds04.PatientMobileApp.entity.WoundCapture;
 import com.ds04.PatientMobileApp.repository.WoundCaptureRepository;
-import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -22,12 +18,30 @@ public class WoundCaptureService {
         this.woundCaptureRepository = woundCaptureRepository;
     }
 
-    public String createWoundCapture(WoundCapture woundCapture) {
+    public String createWoundCapture(WoundCapture woundCapture, MultipartFile photo) {
         try {
+            if(woundCapture.getWoundCaptureId() == null){
+                woundCapture.setWoundCaptureId();
+            }
 
-            woundCaptureRepository.create(woundCapture);
-            System.out.println("reached okay!");
-            return "executed okay!";
+            return woundCaptureRepository.create(woundCapture, photo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+    public WoundCapture getWoundCapture(String woundCaptureId){
+        try {
+            return woundCaptureRepository.findByWoundId(woundCaptureId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // TODO: Implement Exception Handling
+        }
+    }
+
+    public List<WoundCapture> findWoundCapturesByUser(String uid){
+        try {
+            return woundCaptureRepository.findByUid(uid);
         } catch (Exception e) {
             e.printStackTrace();
             return null; // TODO: Implement Exception Handling
