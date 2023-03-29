@@ -11,7 +11,9 @@ import { useEffect, useRef, useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
+import WoundScreen from "./WoundScreen";
 import { auth } from "../../Firebase";
+import { useRoute } from "@react-navigation/native";
 
 export default function WoundCaptureScreen({ navigation }) {
   let cameraRef = useRef();
@@ -20,6 +22,9 @@ export default function WoundCaptureScreen({ navigation }) {
   const [isFrontCamera, setIsFrontCamera] = useState(false);
   const [isFlashEnabled, setIsFlashEnabled] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  const route = useRoute();
+  const woundId = route.params?.woundId;
 
   /**
    * useEffect checks App has camera permissions, and prompts the user if it does not
@@ -89,7 +94,7 @@ export default function WoundCaptureScreen({ navigation }) {
 
     let formData = new FormData();
     formData.append("uid", auth.currentUser.uid);
-    formData.append("woundId", "test");
+    formData.append("woundId", woundId ? woundId : "test");
     formData.append("captureDate", new Date().toString());
     formData.append("photo", {
       uri: photo.uri,
@@ -112,6 +117,13 @@ export default function WoundCaptureScreen({ navigation }) {
 
     console.log("Complete");
     setIsButtonDisabled(false);
+
+    // Navigate to appropriate screen
+    if (woundId) {
+      navigation.navigate("WoundScreen", woundId);
+    } else {
+      navigation.navigate("Dashboard");
+    }
   };
 
   // Preview Mode

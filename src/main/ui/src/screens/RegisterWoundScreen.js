@@ -58,7 +58,8 @@ export default function RegisterWoundScreen({ navigation }) {
         assaultLocationDescription: wound.assaultLocationDescription,
       }),
     }).catch((error) => {
-      alert("An error occured creating Wound: " + error.message);
+      console.log(error.message);
+      alert("Error: Could not create wound");
     });
 
     navigation.navigate("WoundSelectScreen");

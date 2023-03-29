@@ -1,7 +1,8 @@
-import { Divider, List } from "react-native-paper";
+import { ActivityIndicator, Divider, List } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -40,8 +41,8 @@ export default function WoundSelectScreen({ navigation }) {
 
     const unsubscribe = navigation.addListener("focus", () => {
       fetchWounds().catch((error) => {
-        console.log("Error retrieving wound data: " + error);
-        alert("Couldn't retrieve wound data: " + error.message);
+        console.log("Error retrieving wound data: " + error.message);
+        alert("Error: Couldn't retrieve wound data");
       });
     });
 
@@ -77,7 +78,7 @@ export default function WoundSelectScreen({ navigation }) {
   const renderNoDataText = () => {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.loading}>...</Text>
+        <ActivityIndicator animating={true} size={"large"} color={"black"} />
       </SafeAreaView>
     );
   };
@@ -100,23 +101,29 @@ export default function WoundSelectScreen({ navigation }) {
         </TouchableOpacity>
       </SafeAreaView>
 
-      <View>
-        <View style={styles.woundListHeader}>
-          <Text style={styles.woundDetails}>Wound Details</Text>
-          <Text style={styles.lastCapture}>Last Capture</Text>
+      <SafeAreaView style={styles.woundListArea}>
+        <View>
+          <View style={styles.woundListHeader}>
+            <Text style={styles.woundDetails}>Wound Details</Text>
+            <Text style={styles.lastCapture}>Last Capture</Text>
+          </View>
+          <View style={styles.dividerContainer}>
+            <Divider style={styles.divider} />
+          </View>
         </View>
-        <View style={styles.dividerContainer}>
-          <Divider style={styles.divider} />
-        </View>
-      </View>
 
-      <KeyboardAwareScrollView style={styles.scrollableContainer}>
-        <View style={styles.woundListContainer}>
-          <List.Section>
-            {loading ? renderNoDataText() : renderWoundList()}
-          </List.Section>
-        </View>
-      </KeyboardAwareScrollView>
+        <ScrollView
+          style={globalStyle.scrollableContainer}
+          keyboardShouldPersistTaps="handled"
+          nestedScrollEnabled={true}
+        >
+          <View style={styles.woundListContainer}>
+            <List.Section>
+              {loading ? renderNoDataText() : renderWoundList()}
+            </List.Section>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -152,6 +159,9 @@ const styles = StyleSheet.create({
   btnText: {
     fontWeight: "bold",
     color: "black",
+  },
+  woundListArea: {
+    flex: 2,
   },
   woundContainer: {
     borderRadius: 15,

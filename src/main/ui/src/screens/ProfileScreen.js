@@ -1,4 +1,4 @@
-import { Avatar, TextInput } from "react-native-paper";
+import { ActivityIndicator, Avatar, TextInput } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { signOut, updateProfile } from "firebase/auth";
@@ -16,6 +16,7 @@ const globalStyle = require("../../Style");
 export default function ProfileScreen({ navigation }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser, setUserProperty] = User({
     patientId: "",
@@ -51,8 +52,8 @@ export default function ProfileScreen({ navigation }) {
         alert("Signed Out");
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        alert(errorMessage);
+        console.log("Error: " + error.message);
+        alert("Error: Could not sign out");
       });
   };
 
@@ -108,9 +109,11 @@ export default function ProfileScreen({ navigation }) {
         .then((response) => response.json())
         .then((json) => {
           setPatientInformation(json);
+          setLoading(false);
         })
         .catch((error) => {
-          alert("Couldnt retrieve patient information: " + error.message);
+          console.log(error.message);
+          alert("Error: Couldn't retrieve patient information");
         });
     }
   };
@@ -125,7 +128,8 @@ export default function ProfileScreen({ navigation }) {
     updateProfile(signedInUser, {
       displayName: user.username,
     }).catch((error) => {
-      alert(error.message);
+      console.log(error.message);
+      alert("Error: Could not update user information");
     });
 
     await fetch(
@@ -147,8 +151,8 @@ export default function ProfileScreen({ navigation }) {
         }),
       }
     ).catch((error) => {
-      console.log(error);
-      alert("Couldnt retrieve update Patient Information: " + error.message);
+      console.log(error.message);
+      alert("Error: Couldn't retrieve update Patient Information");
     });
 
     setIsEditMode(false);
@@ -168,149 +172,155 @@ export default function ProfileScreen({ navigation }) {
     setUserProperty("homeAddress", jsonResponse.homeAddress);
   };
 
-  /**
-   * Method passed to DatePicker to update the Date of Birth User Property
-   */
-  const setDateOfBirthProperty = (value) => {
-    setUserProperty("dob", new Date(value));
-  };
-
-  return (
-    <KeyboardAwareScrollView style={globalStyle.scrollableContainer}>
-      <SafeAreaView style={styles.avatarArea}>
-        <Avatar.Image
-          size={100}
-          style={styles.avatar}
-          source={require("../../assets/avatar.png")}
+  if (loading) {
+    return (
+      <SafeAreaView style={globalStyle.container}>
+        <ActivityIndicator
+          animating={true}
+          size={"large"}
+          color={"black"}
         />
       </SafeAreaView>
-
-      <SafeAreaView style={styles.informationArea}>
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Email</Text>
-          <TextInput
-            outlineColor={"black"}
-            placeholder={""}
-            value={user.email}
-            mode="outlined"
-            onChangeText={(value) => setUserProperty("email", value)}
-            editable={isEditMode}
+      
+    );
+  } else {
+    return (
+      <KeyboardAwareScrollView style={globalStyle.scrollableContainer}>
+        <SafeAreaView style={styles.avatarArea}>
+          <Avatar.Image
+            size={100}
+            style={styles.avatar}
+            source={require("../../assets/avatar.png")}
           />
         </SafeAreaView>
 
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Username</Text>
-          <TextInput
-            outlineColor={"black"}
-            placeholder={""}
-            value={user.username}
-            mode="outlined"
-            onChangeText={(value) => setUserProperty("username", value)}
-            editable={isEditMode}
-          />
+        <SafeAreaView style={styles.informationArea}>
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Email</Text>
+            <TextInput
+              outlineColor={"black"}
+              placeholder={""}
+              value={user.email}
+              mode="outlined"
+              onChangeText={(value) => setUserProperty("email", value)}
+              editable={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Username</Text>
+            <TextInput
+              outlineColor={"black"}
+              placeholder={""}
+              value={user.username}
+              mode="outlined"
+              onChangeText={(value) => setUserProperty("username", value)}
+              editable={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Firstname</Text>
+            <TextInput
+              outlineColor={"black"}
+              placeholder={""}
+              value={user.firstname}
+              mode="outlined"
+              onChangeText={(value) => setUserProperty("firstname", value)}
+              editable={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Surname</Text>
+            <TextInput
+              outlineColor={"black"}
+              placeholder={""}
+              value={user.surname}
+              mode="outlined"
+              onChangeText={(value) => setUserProperty("surname", value)}
+              editable={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Date of Birth</Text>
+            <DatePicker
+              dateValue={user.dob}
+              setDateValue={(value) => setUserProperty("dob", new Date(value))}
+              isEditMode={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.dropDownLabel}>Gender</Text>
+            <DialogWithRadioButtons
+              dialogOptions={"genders"}
+              onSelectValue={(value) => setUserProperty("gender", value)}
+              currentValue={user.gender}
+              isEditMode={isEditMode}
+            />
+          </SafeAreaView>
+
+          <SafeAreaView style={globalStyle.fieldContainer}>
+            <Text style={globalStyle.textInputLabel}>Home Address</Text>
+            <TextInput
+              outlineColor={"black"}
+              placeholder={""}
+              value={user.homeAddress}
+              mode="outlined"
+              onChangeText={(value) => setUserProperty("homeAddress", value)}
+              editable={isEditMode}
+            />
+          </SafeAreaView>
         </SafeAreaView>
 
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Firstname</Text>
-          <TextInput
-            outlineColor={"black"}
-            placeholder={""}
-            value={user.firstname}
-            mode="outlined"
-            onChangeText={(value) => setUserProperty("firstname", value)}
-            editable={isEditMode}
-          />
+        <SafeAreaView style={styles.btnArea}>
+          {!isEditMode && (
+            <TouchableOpacity
+              style={styles.optionBtn}
+              onPress={handleEnableEditMode}
+              disabled={isButtonDisabled}
+            >
+              <Text style={styles.optionBtnText}>Edit Profile</Text>
+            </TouchableOpacity>
+          )}
+
+          {!isEditMode && (
+            <TouchableOpacity
+              style={styles.optionBtn}
+              onPress={handleSignOut}
+              disabled={isButtonDisabled}
+            >
+              <Text style={styles.optionBtnText}>Sign Out</Text>
+            </TouchableOpacity>
+          )}
+
+          {isEditMode && (
+            <TouchableOpacity
+              style={styles.saveChangesBtn}
+              onPress={handleSaveChanges}
+              disabled={isButtonDisabled}
+            >
+              <Text style={styles.saveOrDiscardBtnText}>Save Changes</Text>
+              <FeatherIcon name="check-circle" size={20} />
+            </TouchableOpacity>
+          )}
+
+          {isEditMode && (
+            <TouchableOpacity
+              style={styles.discardChangesBtn}
+              onPress={() => handleDiscardChanges()}
+              disabled={isButtonDisabled}
+            >
+              <Text style={styles.saveOrDiscardBtnText}>Discard Changes</Text>
+              <FeatherIcon name="x-circle" size={20} />
+            </TouchableOpacity>
+          )}
         </SafeAreaView>
-
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Surname</Text>
-          <TextInput
-            outlineColor={"black"}
-            placeholder={""}
-            value={user.surname}
-            mode="outlined"
-            onChangeText={(value) => setUserProperty("surname", value)}
-            editable={isEditMode}
-          />
-        </SafeAreaView>
-
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Date of Birth</Text>
-          <DatePicker
-            dateValue={user.dob}
-            setDateValue={(value) => setUserProperty("dob", new Date(value))}
-            isEditMode={isEditMode}
-          />
-        </SafeAreaView>
-
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.dropDownLabel}>Gender</Text>
-          <DialogWithRadioButtons
-            dialogOptions={"genders"}
-            onSelectValue={(value) => setUserProperty("gender", value)}
-            currentValue={user.gender}
-            isEditMode={isEditMode}
-          />
-        </SafeAreaView>
-
-        <SafeAreaView style={globalStyle.fieldContainer}>
-          <Text style={globalStyle.textInputLabel}>Home Address</Text>
-          <TextInput
-            outlineColor={"black"}
-            placeholder={""}
-            value={user.homeAddress}
-            mode="outlined"
-            onChangeText={(value) => setUserProperty("homeAddress", value)}
-            editable={isEditMode}
-          />
-        </SafeAreaView>
-      </SafeAreaView>
-
-      <SafeAreaView style={styles.btnArea}>
-        {!isEditMode && (
-          <TouchableOpacity
-            style={styles.optionBtn}
-            onPress={handleEnableEditMode}
-            disabled={isButtonDisabled}
-          >
-            <Text style={styles.optionBtnText}>Edit Profile</Text>
-          </TouchableOpacity>
-        )}
-
-        {!isEditMode && (
-          <TouchableOpacity
-            style={styles.optionBtn}
-            onPress={handleSignOut}
-            disabled={isButtonDisabled}
-          >
-            <Text style={styles.optionBtnText}>Sign Out</Text>
-          </TouchableOpacity>
-        )}
-
-        {isEditMode && (
-          <TouchableOpacity
-            style={styles.saveChangesBtn}
-            onPress={handleSaveChanges}
-            disabled={isButtonDisabled}
-          >
-            <Text style={styles.saveOrDiscardBtnText}>Save Changes</Text>
-            <FeatherIcon name="check-circle" size={20} />
-          </TouchableOpacity>
-        )}
-
-        {isEditMode && (
-          <TouchableOpacity
-            style={styles.discardChangesBtn}
-            onPress={() => handleDiscardChanges()}
-            disabled={isButtonDisabled}
-          >
-            <Text style={styles.saveOrDiscardBtnText}>Discard Changes</Text>
-            <FeatherIcon name="x-circle" size={20} />
-          </TouchableOpacity>
-        )}
-      </SafeAreaView>
-    </KeyboardAwareScrollView>
-  );
+      </KeyboardAwareScrollView>
+    );
+   }
 }
 
 const styles = StyleSheet.create({

@@ -6,6 +6,7 @@ import { Provider as PaperProvider } from "react-native-paper";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterWoundScreen from "./src/screens/RegisterWoundScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import WoundCaptureDetailsScreen from "./src/screens/WoundCaptureDetailsScreen";
 import WoundCaptureScreen from "./src/screens/WoundCaptureScreen";
 import WoundScreen from "./src/screens/WoundScreen";
 import WoundSelectScreen from "./src/screens/WoundSelectScreen";
@@ -60,6 +61,11 @@ export default function App() {
             name="WoundScreen"
             component={WoundScreen}
             options={{ title: "Wound" }}
+          />
+          <Stack.Screen
+            name="WoundCaptureDetailsScreen"
+            component={WoundCaptureDetailsScreen}
+            options={{ title: "Wound Capture" }}
           />
           <Stack.Screen
             name="ProfileScreen"

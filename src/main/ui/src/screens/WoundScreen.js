@@ -1,4 +1,10 @@
-import { BottomNavigation, Divider, List, TextInput } from "react-native-paper";
+import {
+  ActivityIndicator,
+  BottomNavigation,
+  Divider,
+  List,
+  TextInput,
+} from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -6,19 +12,17 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
+import { formatDate, formatTime } from "../actions/SharedFunctions";
 
 import DatePicker from "../components/DatePicker";
 import DialogWithCheckboxes from "../components/DialogWithCheckboxes";
 import DialogWithRadioButtons from "../components/DialogWithRadioButtons";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import Wound from "../models/Wound";
-import WoundCapture from "../models/WoundCapture";
 import { auth } from "../../Firebase";
-import { formatDate } from "../actions/SharedFunctions";
 import { useRoute } from "@react-navigation/native";
 
 const globalStyle = require("../../Style");
@@ -61,8 +65,11 @@ export default function WoundScreen({ navigation }) {
   const [woundCaptures, setWoundCaptures] = useState(null);
 
   useEffect(() => {
-    const fetchWound = async () => {
-      const response = await fetch(
+    const fetchWoundData = async () => {
+      setLoading(true);
+
+      // Fetch Wound Data
+      const woundResponse = await fetch(
         REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/wound/getWound/" + woundId,
         {
           method: "GET",
@@ -71,16 +78,15 @@ export default function WoundScreen({ navigation }) {
           },
         }
       );
-      const json = await response.json();
-      setWoundInformation(json);
-      console.log("Wound Information: ");
-      console.log(wound);
-    };
 
-    const fetchWoundCaptures = async () => {
-      const response = await fetch(
+      // Set Wound
+      const woundJson = await woundResponse.json();
+      setWoundInformation(woundJson);
+
+      // Fetch Wound Capture Data
+      const woundCaptureResponse = await fetch(
         REACT_APP_LOCAL_BACKEND_BASE_URL +
-          "/api/woundCaptures/findWoundCapturesByUser/" +
+          "/api/woundCapture/findWoundCapturesByUser/" +
           auth.currentUser.uid,
         {
           method: "GET",
@@ -89,24 +95,20 @@ export default function WoundScreen({ navigation }) {
           },
         }
       );
-      const json = await response.json();
-      setWoundCaptures(json);
-      console.log("Associated Wound Captures: ");
-      console.log(woundCaptures);
+
+      // Sort Wound Capture Data with most recent first
+      await woundCaptureResponse.json().then((data) => {
+        data.sort((a, b) => new Date(b.captureDate) - new Date(a.captureDate));
+        setWoundCaptures(data);
+        setLoading(false);
+      });
     };
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      fetchWound().catch((error) => {
-        console.log("Error retrieving wound data: " + error);
-        alert("Couldn't retrieve wound data: " + error.message);
+    const unsubscribe = navigation.addListener("focus", async () => {
+      fetchWoundData().catch((error) => {
+        console.log("Error retrieving wound data: " + error.message);
+        alert("Error: Couldn't retrieve wound data");
       });
-
-      fetchWoundCaptures().catch((error) => {
-        console.log("Error retrieving wound capture data: " + error);
-        alert("Couldn't retrieve wound capture data: " + error.message);
-      });
-
-      setLoading(false);
     });
 
     return unsubscribe;
@@ -133,16 +135,52 @@ export default function WoundScreen({ navigation }) {
     );
   };
 
-  const renderNoDataText = () => {
+  // Removed as request timing out retrieving multiple images
+  // const getImageUri = (base64Data) => {
+  //   return `data:image/jpeg;base64,${base64Data}`;
+  // };
+
+  const renderNoWoundCapturesText = () => {
     return (
       <SafeAreaView style={trackingStyles.loadingContainer}>
-        <Text style={trackingStyles.loading}>...</Text>
+        <ActivityIndicator animating={true} size={"large"} color={"black"} />
       </SafeAreaView>
     );
   };
 
   const renderWoundCaptureList = () => {
-    return null;
+    return woundCaptures.map((woundCapture) => {
+      return (
+        <TouchableOpacity
+          style={trackingStyles.woundCaptureContainer}
+          key={woundCapture.woundCaptureId}
+          disabled={isButtonDisabled}
+          onPress={() => handleWoundCaptureSelect(woundCapture.woundCaptureId)}
+        >
+          <List.Item
+            key={woundCapture.woundCaptureId}
+            title={"Wound Capture"}
+            style={trackingStyles.woundCaptureListItem}
+            description={"See details"}
+            // left={() => <List.Image source={{uri: getImageUri(woundCapture.base64Image)}} />}
+            left={() => <List.Icon icon="image" />}
+            right={() => (
+              <View style={trackingStyles.lastCapture}>
+                <Text>{formatDate(new Date(woundCapture.captureDate))}</Text>
+                <Text>{formatTime(new Date(woundCapture.captureDate))}</Text>
+              </View>
+            )}
+          />
+        </TouchableOpacity>
+      );
+    });
+  };
+
+  const handleWoundCaptureSelect = (woundCaptureId) => {
+    console.log("Wound Capture Selected: " + woundCaptureId);
+    navigation.navigate("WoundCaptureDetailsScreen", {
+      woundCaptureId: woundCaptureId,
+    });
   };
 
   const WoundTracking = () => {
@@ -151,7 +189,9 @@ export default function WoundScreen({ navigation }) {
         <SafeAreaView style={trackingStyles.captureWoundBtnArea}>
           <TouchableOpacity
             style={trackingStyles.captureWoundBtn}
-            onPress={() => navigation.navigate("WoundCaptureScreen")}
+            onPress={() =>
+              navigation.navigate("WoundCaptureScreen", { woundId: woundId })
+            }
           >
             <SafeAreaView style={trackingStyles.captureWoundBtnContent}>
               <MaterialCommunityIcons
@@ -164,33 +204,182 @@ export default function WoundScreen({ navigation }) {
           </TouchableOpacity>
         </SafeAreaView>
 
-        <View>
-          <View style={trackingStyles.woundCaptureListHeader}>
-            <Text style={trackingStyles.woundCaptureHeader}>Wound Capture</Text>
-            <Text style={trackingStyles.recordedHeader}>Recorded</Text>
+        <SafeAreaView style={trackingStyles.woundCapturesArea}>
+          <View>
+            <View style={trackingStyles.woundCaptureListHeader}>
+              <Text style={trackingStyles.woundCaptureHeader}>
+                Wound Capture
+              </Text>
+              <Text style={trackingStyles.recordedHeader}>Recorded</Text>
+            </View>
+            <View style={trackingStyles.dividerContainer}>
+              <Divider style={trackingStyles.divider} />
+            </View>
           </View>
-          <View style={trackingStyles.dividerContainer}>
-            <Divider style={trackingStyles.divider} />
-          </View>
-        </View>
 
-        <KeyboardAwareScrollView style={trackingStyles.scrollableContainer}>
-          <View style={trackingStyles.woundCaptureListContainer}>
-            <List.Section>
-              {loading ? renderNoDataText() : renderWoundCaptureList()}
-            </List.Section>
-          </View>
-        </KeyboardAwareScrollView>
+          <ScrollView
+            style={globalStyle.scrollableContainer}
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled={true}
+          >
+            <View style={trackingStyles.woundCaptureListContainer}>
+              <List.Section>
+                {loading
+                  ? renderNoWoundCapturesText()
+                  : renderWoundCaptureList()}
+              </List.Section>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
       </SafeAreaView>
     );
   };
 
-  const formatValueForOverviewCard = (value) => {
+  /**
+   * Method formats Wound Properties of type string
+   */
+  const formatWoundValue = (value) => {
     const maxLen = 16;
     if (value.length > maxLen) {
       return value.slice(0, maxLen) + "...";
     } else {
       return value;
+    }
+  };
+
+  /**
+   * Method renders formatted Wound Property or Activity Indicator
+   */
+  const renderWoundValue = (woundValue) => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          animating={true}
+          size={12}
+          color={"black"}
+          style={{ marginBottom: 12 }}
+        />
+      );
+    } else {
+      switch (typeof woundValue) {
+        case "string":
+          return (
+            <Text style={overviewStyles.cardText}>
+              {formatWoundValue(woundValue)}
+            </Text>
+          );
+        case "object":
+          return (
+            <Text style={overviewStyles.cardText}>
+              {formatDate(woundValue)}
+            </Text>
+          );
+        default:
+          return <Text style={overviewStyles.cardText}>{"-"}</Text>;
+      }
+    }
+  };
+
+  /**
+   * Method formats Wound Capture property depending on type
+   */
+  const formatWoundCaptureValue = (value) => {
+    if (woundCaptures.length != 0) {
+      switch (value) {
+        case "captureDate":
+          return formatDate(new Date(woundCaptures[0].captureDate));
+        case "c02Value":
+          return woundCaptures[0].c02Value;
+        case "isInfected":
+          return woundCaptures[0].isInfected ? "Yes" : "No";
+        default:
+          return "-";
+      }
+    } else {
+      return "-";
+    }
+  };
+
+  /**
+   * Method renders formatted Wound Capture Property or Activity Indicator
+   */
+  const renderWoundCaptureValue = (woundCapturePropertyToDisplay) => {
+    return (
+      <Text style={overviewStyles.cardText}>
+        {formatWoundCaptureValue(woundCapturePropertyToDisplay)}
+      </Text>
+    );
+  };
+
+  const renderWoundInformation = () => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          animating={true}
+          size={"large"}
+          color={"black"}
+          style={{ marginTop: 30 }}
+        />
+      );
+    } else {
+      return (
+        <View style={overviewStyles.cardContents}>
+          <View style={overviewStyles.cardContentsLeft}>
+            <Text style={overviewStyles.cardText}>Wound Type:</Text>
+            <Text style={overviewStyles.cardText}>Wound Location on Body:</Text>
+            <Text style={overviewStyles.cardText}>Injury Date:</Text>
+            <Text style={overviewStyles.cardText}>Place of Injury:</Text>
+            <Text style={overviewStyles.cardText}>Injury Intent:</Text>
+            <Text style={overviewStyles.cardText}>Injury Activity Status:</Text>
+            <Text style={overviewStyles.cardText}>Injury Activity Type:</Text>
+            <Text style={overviewStyles.cardText}>Injury Mechanism:</Text>
+            <Text style={overviewStyles.cardText}>
+              Drug or Alcohol Involvement:
+            </Text>
+          </View>
+          <View style={overviewStyles.cardContentsRight}>
+            {renderWoundValue(wound.woundType)}
+            {renderWoundValue(wound.woundLocationOnBody)}
+            {renderWoundValue(new Date(wound.injuryDate))}
+            {renderWoundValue(wound.placeOfInjury)}
+            {renderWoundValue(wound.injuryIntent)}
+            {renderWoundValue(wound.injuryActivityStatus)}
+            {renderWoundValue(wound.injuryActivityType)}
+            {renderWoundValue(wound.injuryMechanism.toString())}
+            {renderWoundValue(
+              wound.injuryDrugOrAlcoholInvolvement ? "Yes" : "No"
+            )}
+          </View>
+        </View>
+      );
+    }
+  };
+
+  const renderLatestCaptureInformation = () => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          animating={true}
+          size={"large"}
+          color={"black"}
+          style={{ marginVertical: 26 }}
+        />
+      );
+    } else {
+      return (
+        <View style={overviewStyles.cardContents}>
+          <View style={overviewStyles.cardContentsLeft}>
+            <Text style={overviewStyles.cardText}>Latest Capture:</Text>
+            <Text style={overviewStyles.cardText}>Latest C02 Reading:</Text>
+            <Text style={overviewStyles.cardText}>Is Infected:</Text>
+          </View>
+          <View style={overviewStyles.cardContentsRight}>
+            {renderWoundCaptureValue("captureDate")}
+            {renderWoundCaptureValue("c02Value")}
+            {renderWoundCaptureValue("isInfected")}
+          </View>
+        </View>
+      );
     }
   };
 
@@ -205,71 +394,21 @@ export default function WoundScreen({ navigation }) {
 
         <View style={overviewStyles.woundDetailsCard}>
           <Text style={overviewStyles.cardTitle}>Wound Information</Text>
-          <View style={overviewStyles.cardContents}>
-            <View style={overviewStyles.cardContentsLeft}>
-              <Text style={overviewStyles.cardText}>Wound Type:</Text>
-              <Text style={overviewStyles.cardText}>
-                Wound Location on Body:
-              </Text>
-              <Text style={overviewStyles.cardText}>Injury Date:</Text>
-              <Text style={overviewStyles.cardText}>Place of Injury:</Text>
-              <Text style={overviewStyles.cardText}>Injury Intent:</Text>
-              <Text style={overviewStyles.cardText}>
-                Injury Activity Status:
-              </Text>
-              <Text style={overviewStyles.cardText}>Injury Activity Type:</Text>
-              <Text style={overviewStyles.cardText}>Injury Mechanism:</Text>
-              <Text style={overviewStyles.cardText}>
-                Drug or Alcohol Involvement:
-              </Text>
-            </View>
-            <View style={overviewStyles.cardContentsRight}>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.woundType)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.woundLocationOnBody)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatDate(new Date(wound.injuryDate))}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.placeOfInjury)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.injuryIntent)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.injuryActivityStatus)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.injuryActivityType)}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {formatValueForOverviewCard(wound.injuryMechanism.toString())}
-              </Text>
-              <Text style={overviewStyles.cardText}>
-                {wound.injuryDrugOrAlcoholInvolvement ? "Yes" : "No"}
-              </Text>
-            </View>
-          </View>
+          {renderWoundInformation()}
         </View>
 
         <View style={overviewStyles.trackingSummaryCard}>
           <Text style={overviewStyles.cardTitle}>Tracking Summary</Text>
-          <View style={overviewStyles.cardContents}>
-            <View style={overviewStyles.cardContentsLeft}>
-              <Text style={overviewStyles.cardText}>Latest C02 Reading:</Text>
-              <Text style={overviewStyles.cardText}>Is Infected:</Text>
-              <Text style={overviewStyles.cardText}>Last Capture:</Text>
-            </View>
-            <View style={overviewStyles.cardContentsRight}>
-              <Text style={overviewStyles.cardText}>test</Text>
-              <Text style={overviewStyles.cardText}>test</Text>
-              <Text style={overviewStyles.cardText}>test</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={overviewStyles.seeLatestWoundCaptureBtn}>
+          {renderLatestCaptureInformation()}
+          <TouchableOpacity
+            style={overviewStyles.seeLatestWoundCaptureBtn}
+            disabled={isButtonDisabled}
+            onPress={() =>
+              navigation.navigate("WoundCaptureDetailsScreen", {
+                woundCaptureId: woundCaptures[0].woundCaptureId,
+              })
+            }
+          >
             <Text style={trackingStyles.btnText}>View Latest Capture</Text>
             <MaterialCommunityIcons
               style={overviewStyles.btnIcon}
@@ -300,9 +439,7 @@ export default function WoundScreen({ navigation }) {
     setIsButtonDisabled(true);
 
     await fetch(
-      REACT_APP_LOCAL_BACKEND_BASE_URL +
-        "/api/wound/update/" +
-        woundId,
+      REACT_APP_LOCAL_BACKEND_BASE_URL + "/api/wound/update/" + woundId,
       {
         method: "PUT",
         headers: {
@@ -324,8 +461,8 @@ export default function WoundScreen({ navigation }) {
         }),
       }
     ).catch((error) => {
-      console.log(error);
-      alert("Couldn't update wound information': " + error.message);
+      console.log(error.message);
+      alert("Error: Couldn't update wound information");
     });
 
     setIsEditMode(false);
@@ -336,13 +473,16 @@ export default function WoundScreen({ navigation }) {
     return (
       <ScrollView
         style={globalStyle.scrollableContainer}
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="none"
         nestedScrollEnabled={true}
       >
         <SafeAreaView style={detailsStyles.scene}>
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.dropDownComponentText}>
-              Wound Type<Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              Wound Type
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <DialogWithRadioButtons
               dialogOptions={"woundTypes"}
@@ -355,7 +495,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
               Wound Location On Body
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <TextInput
               outlineColor={"black"}
@@ -371,7 +513,10 @@ export default function WoundScreen({ navigation }) {
 
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
-              Injury Date<Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              Injury Date
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <DatePicker
               dateValue={wound.injuryDate}
@@ -385,7 +530,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
               Place of Injury
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <TextInput
               outlineColor={"black"}
@@ -400,7 +547,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
               Injury Intent
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <TextInput
               outlineColor={"black"}
@@ -415,7 +564,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
               Injury Activity Status
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <TextInput
               outlineColor={"black"}
@@ -432,7 +583,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.textComponentText}>
               Injury Activity Type
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <TextInput
               outlineColor={"black"}
@@ -449,7 +602,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.dropDownComponentText}>
               Injury Mechanism
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <DialogWithCheckboxes
               checkboxOptions={"injuryMechanisms"}
@@ -464,7 +619,9 @@ export default function WoundScreen({ navigation }) {
           <SafeAreaView style={detailsStyles.inputContainer}>
             <Text style={detailsStyles.dropDownComponentText}>
               Injury Drug or Alcohol Involvement
-              <Text style={detailsStyles.requiredAsterisk}>{isEditMode ? " *" : ""}</Text>
+              <Text style={detailsStyles.requiredAsterisk}>
+                {isEditMode ? " *" : ""}
+              </Text>
             </Text>
             <DialogWithRadioButtons
               dialogOptions={"yesOrNo"}
@@ -681,6 +838,9 @@ const trackingStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  woundCapturesArea: {
+    flex: 2,
+  },
   btnIcon: {
     marginBottom: 12,
   },
@@ -709,9 +869,17 @@ const trackingStyles = StyleSheet.create({
   woundCaptureListContainer: {
     padding: 10,
   },
+  lastCapture: {
+    alignItems: "flex-end",
+  },
+  woundCaptureContainer: {
+    borderRadius: 15,
+    height: 70,
+    backgroundColor: "white",
+    marginBottom: 10,
+  },
   woundCaptureListItem: {
     paddingHorizontal: 10,
-    marginBottom: 16,
   },
   loadingContainer: {
     padding: 10,

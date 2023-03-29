@@ -11,3 +11,11 @@ export const formatDate = (tempDate) => {
 
   return day + "/" + month + "/" + year;
 };
+
+export const formatTime = (value) => {
+  return (
+    value.getHours().toString().padStart(2, "0") +
+    ":" +
+    value.getMinutes().toString().padStart(2, "0")
+  );
+};

@@ -69,7 +69,10 @@ export default function LoginScreen({ navigation }) {
                 body: JSON.stringify({ uid: auth.currentUser.uid }),
               }
             ).catch((error) => {
-              alert("An error occured creating Patient: " + error.message);
+              console.log(
+                "An error occured creating Patient: " + error.message
+              );
+              alert("Error: Could not create patient profile");
             });
 
             clearLoginScreenUseStates();
@@ -79,11 +82,13 @@ export default function LoginScreen({ navigation }) {
             }
           })
           .catch((error) => {
-            alert(error.message);
+            console.log(error.message);
+            alert("Error: Could not set display name");
           });
       })
       .catch((error) => {
-        alert(error.message);
+        console.log(error.message);
+        alert("Error: Could not create user account");
       });
   };
 
@@ -100,8 +105,8 @@ export default function LoginScreen({ navigation }) {
         }
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        alert(errorMessage);
+        console.log("Could not sign in: " + error.message);
+        alert("Username or Password Incorrect");
       });
   };
 

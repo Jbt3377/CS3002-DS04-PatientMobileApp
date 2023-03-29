@@ -130,16 +130,16 @@ const DialogWithRadioButtons = ({
   }, []);
 
   const checkCurrentValueTypeAndFormatDependingOnType = (currentValue) => {
-    if (typeof currentValue == Boolean){
-      if(currentValue){
+    if (typeof currentValue == Boolean) {
+      if (currentValue) {
         return "Yes";
       } else {
-        return "No"
+        return "No";
       }
     } else {
       return currentValue;
     }
-  }
+  };
 
   /**
    * Method checks the data type of selectedValue and returns a diplayable version of the value

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { auth } from "../../Firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 const globalStyle = require("../../Style");
 
@@ -23,7 +22,9 @@ export default function DashboardScreen({ navigation }) {
   return (
     <SafeAreaView style={globalStyle.container}>
       <SafeAreaView style={styles.welcomeTextArea}>
-        <Text style={styles.welcomeText}>Hello, {displayName}!</Text>
+        <View style={styles.welcomeTextContainer}>
+          <Text style={styles.welcomeText}>Hello, {displayName}!</Text>
+        </View>
       </SafeAreaView>
 
       <SafeAreaView style={styles.optionsArea}>
@@ -104,10 +105,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  welcomeTextContainer: {
+    backgroundColor: "grey",
+    width: "80%",
+    height: 60,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
   welcomeText: {
     color: "white",
     fontSize: 20,
-    marginTop: 40,
   },
   optionsArea: {
     flex: 5,
