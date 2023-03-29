@@ -5,7 +5,6 @@ import com.google.api.core.ApiFuture;
 import com.google.auth.Credentials;
 import com.google.cloud.firestore.*;
 import com.google.cloud.storage.*;
-import com.google.cloud.storage.Blob;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
 import org.springframework.stereotype.Repository;
@@ -50,9 +49,6 @@ public class WoundCaptureRepository {
 
     public WoundCapture findByWoundId(String woundCaptureId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        Credentials credentials = db.getOptions().getCredentials();
-        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        Bucket bucket = StorageClient.getInstance().bucket();
 
         // Get Document
         ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(woundCaptureId).get();
@@ -63,42 +59,20 @@ public class WoundCaptureRepository {
         }
 
         // Convert to WoundCapture Object
-        WoundCapture woundCapture = document.toObject(WoundCapture.class);
-        assert woundCapture != null;
-
-        // Retrieve photo & add to WoundCapture
-        Blob imageBlob = storage.get(bucket.getName(), woundCapture.getFilename());
-        woundCapture.setImageBlob(imageBlob);
-
-        return woundCapture;
+        return document.toObject(WoundCapture.class);
     }
 
     public List<WoundCapture> findByUid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        Credentials credentials = db.getOptions().getCredentials();
-        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        Bucket bucket = StorageClient.getInstance().bucket();
-
-        System.out.println("Here");
 
         // Get documents
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).orderBy("injuryDate").whereEqualTo("uid", uid).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         // Convert documents to WoundCapture objects
         ArrayList<WoundCapture> results = new ArrayList<>();
         for (DocumentSnapshot document : documents) {
             results.add(document.toObject(WoundCapture.class));
-        }
-
-        System.out.println("Debug");
-        System.out.println(documents.size());
-        System.out.println(results);
-
-        // Retrieve photo & add to WoundCapture
-        for(WoundCapture woundCapture: results){
-            Blob imageBlob = storage.get(bucket.getName(), woundCapture.getFilename());
-            woundCapture.setImageBlob(imageBlob);
         }
 
         return results;

@@ -5,6 +5,7 @@ import com.ds04.PatientMobileApp.entity.WoundCapture;
 import com.ds04.PatientMobileApp.service.WoundCaptureService;
 import com.ds04.PatientMobileApp.service.WoundService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +34,13 @@ public class WoundCaptureController {
     }
 
     @GetMapping("/getWoundCapture/{woundCaptureId}")
-    public WoundCapture getWoundCapture(@PathVariable String woundCaptureId) {
-        return woundCaptureService.getWoundCapture(woundCaptureId);
+    public ResponseEntity getWoundCapture(@PathVariable String woundCaptureId) {
+        WoundCapture woundCapture = woundCaptureService.getWoundCapture(woundCaptureId);
+        return new ResponseEntity<>(woundCapture, HttpStatus.OK);
     }
 
     @GetMapping("/findWoundCapturesByUser/{uid}")
     public List<WoundCapture> findWoundCapturesByUser(@PathVariable String uid) {
-        System.out.println("Reached endpoint");
         return woundCaptureService.findWoundCapturesByUser(uid);
     }
 

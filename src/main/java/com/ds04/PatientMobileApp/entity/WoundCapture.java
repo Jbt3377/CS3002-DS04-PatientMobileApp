@@ -1,12 +1,13 @@
 package com.ds04.PatientMobileApp.entity;
 
 import com.google.cloud.firestore.annotation.DocumentId;
-import com.google.cloud.storage.Blob;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+@Schema
 public class WoundCapture {
 
     @DocumentId
@@ -15,10 +16,11 @@ public class WoundCapture {
     private String woundId;
     private Date captureDate;
     private String filename;
-
-    private Blob imageBlob;
+    private byte[] base64Image;
     private double c02Value;
     private boolean isInfected;
+
+    public WoundCapture(){}
 
     public WoundCapture(String uid, String woundId, Date captureDate){
         this.uid = uid;
@@ -74,12 +76,12 @@ public class WoundCapture {
         this.c02Value = c02Value;
     }
 
-    public boolean isInfected() {
+    public boolean getIsInfected() {
         return isInfected;
     }
 
-    public void setInfected(boolean infected) {
-        isInfected = infected;
+    public void setIsInfected(boolean isInfected) {
+        this.isInfected = isInfected;
     }
 
     public HashMap<String, Object> convertToMap() {
@@ -94,11 +96,11 @@ public class WoundCapture {
         return docData;
     }
 
-    public Blob getImageBlob() {
-        return imageBlob;
+    public byte[] getBase64Image() {
+        return base64Image;
     }
 
-    public void setImageBlob(Blob imageBlob) {
-        this.imageBlob = imageBlob;
+    public void setBase64Image(byte[] base64Image) {
+        this.base64Image = base64Image;
     }
 }
