@@ -1,5 +1,6 @@
 package com.ds04.PatientMobileApp.util;
 
+import com.ds04.PatientMobileApp.exceptions.UnprocessableImageException;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -18,7 +19,7 @@ public class ReactiveStripDetectionUtil {
         Mat blurredImage = new Mat();
         Imgproc.GaussianBlur(mat, blurredImage, new Size(3, 3), 0);
 
-        Imgcodecs.imwrite("output/blurredImage.jpg", blurredImage);
+        Imgcodecs.imwrite("blurredImage.jpg", blurredImage);
 
         // Convert to Greyscale
         Mat greyImage = new Mat();
@@ -32,7 +33,7 @@ public class ReactiveStripDetectionUtil {
         Mat dilateImage = new Mat();
         Imgproc.dilate(cannyImage, dilateImage, new Mat(), new Point(-1, -1), 1);
 
-        Imgcodecs.imwrite("output/processedImage.jpg", dilateImage);
+        Imgcodecs.imwrite("processedImage.jpg", dilateImage);
 
         return dilateImage;
     }
@@ -46,7 +47,7 @@ public class ReactiveStripDetectionUtil {
 
         // Filter contours to look for reactive strip squares
         List<MatOfPoint> squares = new ArrayList<>();
-        List<Rect> squareCoords = new ArrayList<>();
+        List<Rect> squareCoordinates = new ArrayList<>();
         for (MatOfPoint contour : allContours) {
             MatOfPoint2f approxCurve = new MatOfPoint2f();
             MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
@@ -55,17 +56,49 @@ public class ReactiveStripDetectionUtil {
             MatOfPoint approxMatOfPoint = new MatOfPoint(approxCurve.toArray());
 
             double contourArea = Imgproc.contourArea(approxMatOfPoint);
-            boolean isNotNoise = approxCurve.total() == 4 && contourArea > 30000 && contourArea < 800000;
+            boolean isNotNoise = approxCurve.total() == 4 && contourArea > 60000 && contourArea < 800000;
 
             if (isNotNoise) {
                 System.out.println("Contour Area: " + contourArea);
                 squares.add(approxMatOfPoint);
                 Rect squareRect = Imgproc.boundingRect(approxMatOfPoint);
-                squareCoords.add(squareRect);
+                squareCoordinates.add(squareRect);
             }
         }
 
-        System.out.println("Number of Squares identified: " + squareCoords.size());
+        System.out.println("Number of Squares identified: " + squareCoordinates.size());
+        System.out.println("Number of Squares identified (MoP): " + squares.size());
+
+        // Nested for loop removes any overlapping Rect objects
+        for (int i = 0; i < squareCoordinates.size(); i++) {
+            Rect rect1 = squareCoordinates.get(i);
+            for (int j = i + 1; j < squareCoordinates.size(); j++) {
+                Rect rect2 = squareCoordinates.get(j);
+
+                boolean doOverlap = rect1.tl().x < rect2.br().x &&
+                        rect1.br().x > rect2.tl().x &&
+                        rect1.tl().y < rect2.br().y &&
+                        rect1.br().y > rect2.tl().y;
+
+                System.out.println("Checking overlap");
+
+                // check if the intersection rectangle is valid
+                if (doOverlap) {
+                    double area1 = rect1.area();
+                    double area2 = rect2.area();
+
+                    System.out.println("Overlap detected");
+
+                    squareCoordinates.remove(area1 < area2 ? i : j);
+                    squares.remove(area1 < area2 ? i : j);
+                    i--;
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Number of Squares not overlapping: " + squareCoordinates.size());
+        System.out.println("Number of Squares not overlapping (MoP): " + squares.size());
 
         // Draw filtered contours on image and save
         Imgproc.drawContours(
@@ -73,21 +106,21 @@ public class ReactiveStripDetectionUtil {
                 squares,
                 -1,
                 new Scalar(0, 255, 0),
-                2
+                3
         );
 
         // Crop image to obtain two largest squares
-        for (int i = 0; i < squareCoords.size() ; i++) {
-            Rect squareRect = squareCoords.get(i);
+        for (int i = 0; i < squareCoordinates.size() ; i++) {
+            Rect squareRect = squareCoordinates.get(i);
             Mat square = originalImage.submat(squareRect);
-            Imgcodecs.imwrite("output/square" + (i + 1) + ".jpg", square);
+            Imgcodecs.imwrite("square" + (i + 1) + ".jpg", square);
         }
 
-        Imgcodecs.imwrite("output/filteredContours.jpg", originalImage);
+        Imgcodecs.imwrite("identifiedSquares.jpg", originalImage);
 
         // Check two squares detected
-        if (squareCoords.size() != 2){
-            return null;
+        if (squareCoordinates.size() != 2){
+            throw new UnprocessableImageException("Control and Reactive squares could not be identified in provided image");
         }
 
         return squares;
@@ -117,8 +150,12 @@ public class ReactiveStripDetectionUtil {
         // Calculate mean pixel values for both strips
         Scalar meanControlStripColour = calculateMeanPixelColour(controlStrip, "control", originalImage);
 
+        System.out.println("Mean Control Strip Pixel Value: " + meanControlStripColour);
+
         // Calculate mean pixel vale for reactive strip
         Scalar meanReactiveStripColour = calculateMeanPixelColour(reactiveStrip, "reactive", originalImage);
+
+        System.out.println("Mean Reactive Strip Pixel Value: " + meanReactiveStripColour);
 
         // Apply to algorithm
         // TODO Add Algo Code
@@ -146,7 +183,7 @@ public class ReactiveStripDetectionUtil {
     /**
      * Method converts Matrix to BufferedImage
      */
-    private static BufferedImage convertMatToBufferedImage(final Mat mat) {
+    public static BufferedImage convertMatToBufferedImage(final Mat mat) {
         // Create buffered image
         BufferedImage bufferedImage = new BufferedImage(
                 mat.width(),

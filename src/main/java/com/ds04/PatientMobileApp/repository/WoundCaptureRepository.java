@@ -10,6 +10,7 @@ import com.google.firebase.cloud.StorageClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +20,16 @@ import java.util.concurrent.ExecutionException;
 public class WoundCaptureRepository {
 
     private static final String COLLECTION_NAME = "woundCaptures";
+    private static final String CONTENT_TYPE = "image/jpeg";
 
-    public String create(WoundCapture woundCapture, MultipartFile photo) throws ExecutionException, InterruptedException, IOException {
+
+    public String create(WoundCapture woundCapture, byte[] photo) throws ExecutionException, InterruptedException, IOException {
         Firestore db = FirestoreClient.getFirestore();
         Credentials credentials = db.getOptions().getCredentials();
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         Bucket bucket = StorageClient.getInstance().bucket();
+
+        System.out.println("Entered Repo");
 
         // Generate and set Filename (filename is a composite of uid and WoundCaptureId)
         String filename = woundCapture.getUid() + "_" + woundCapture.getWoundCaptureId();
@@ -34,16 +39,16 @@ public class WoundCaptureRepository {
         BlobId blobId = BlobId.of(bucket.getName(), filename);
 
         // Create a BlobInfo with the content type of the file
-        String contentType = photo.getContentType();
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(CONTENT_TYPE).build();
 
         // Upload the file to Firebase Storage
-        byte[] content = photo.getBytes();
-        storage.create(blobInfo, content);
+        storage.create(blobInfo, photo);
         System.out.println("File uploaded successfully!");
 
         // Upload Wound Capture Document
         ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundCapture.getWoundCaptureId()).set(woundCapture.convertToMap());
+        System.out.println("Wound Capture saved successfully!");
+
         return future.get().getUpdateTime().toString();
     }
 
