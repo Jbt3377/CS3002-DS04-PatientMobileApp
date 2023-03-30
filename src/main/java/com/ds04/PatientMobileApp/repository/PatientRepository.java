@@ -1,17 +1,15 @@
 package com.ds04.PatientMobileApp.repository;
 
 import com.ds04.PatientMobileApp.entity.Patient;
-import com.ds04.PatientMobileApp.entity.Wound;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
+import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Repository
@@ -25,7 +23,7 @@ public class PatientRepository {
         return future.get().getUpdateTime().toString();
     }
 
-    public Patient findById(String patientId) throws ExecutionException, InterruptedException {
+    public Patient findByPatientId(String patientId) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(patientId).get();
         DocumentSnapshot document = future.get();
@@ -33,19 +31,19 @@ public class PatientRepository {
         if(document.exists()){
             return document.toObject(Patient.class);
         }else{
-            return null;
+            throw new IllegalArgumentException("Could not find Patient with patientId: " + patientId);
         }
     }
 
-    public Patient findByUserId(String patientId) throws ExecutionException, InterruptedException {
+    public Patient findByUserId(String uid) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", patientId).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         if(!documents.isEmpty()){
             return documents.get(0).toObject(Patient.class);
         }else{
-            return null;
+            throw new IllegalArgumentException("Could not find Patient with uid: " + uid);
         }
     }
 

@@ -31,7 +31,8 @@ export default function WoundScreen({ navigation }) {
   const route = useRoute();
   const woundId = route.params?.woundId;
 
-  const [loading, setLoading] = useState(true);
+  const [loadingWoundInformation, setLoadingWoundInformation] = useState(true);
+  const [loadingWoundCaptureInformation, setLoadingWoundCaptureInformation] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [wound, setWound, setWoundProperty, woundModelIsValid] = Wound({
@@ -66,7 +67,8 @@ export default function WoundScreen({ navigation }) {
 
   useEffect(() => {
     const fetchWoundData = async () => {
-      setLoading(true);
+      setLoadingWoundInformation(true);
+      setLoadingWoundCaptureInformation(true);
 
       // Fetch Wound Data
       const woundResponse = await fetch(
@@ -82,12 +84,13 @@ export default function WoundScreen({ navigation }) {
       // Set Wound
       const woundJson = await woundResponse.json();
       setWoundInformation(woundJson);
+      setLoadingWoundInformation(false);
 
       // Fetch Wound Capture Data
       const woundCaptureResponse = await fetch(
         REACT_APP_LOCAL_BACKEND_BASE_URL +
           "/api/woundCapture/findWoundCapturesByUser/" +
-          auth.currentUser.uid,
+          woundId,
         {
           method: "GET",
           headers: {
@@ -100,7 +103,7 @@ export default function WoundScreen({ navigation }) {
       await woundCaptureResponse.json().then((data) => {
         data.sort((a, b) => new Date(b.captureDate) - new Date(a.captureDate));
         setWoundCaptures(data);
-        setLoading(false);
+        setLoadingWoundCaptureInformation(false);
       });
     };
 
@@ -224,7 +227,7 @@ export default function WoundScreen({ navigation }) {
           >
             <View style={trackingStyles.woundCaptureListContainer}>
               <List.Section>
-                {loading
+                {loadingWoundCaptureInformation
                   ? renderNoWoundCapturesText()
                   : renderWoundCaptureList()}
               </List.Section>
@@ -251,32 +254,21 @@ export default function WoundScreen({ navigation }) {
    * Method renders formatted Wound Property or Activity Indicator
    */
   const renderWoundValue = (woundValue) => {
-    if (loading) {
-      return (
-        <ActivityIndicator
-          animating={true}
-          size={12}
-          color={"black"}
-          style={{ marginBottom: 12 }}
-        />
-      );
-    } else {
-      switch (typeof woundValue) {
-        case "string":
-          return (
-            <Text style={overviewStyles.cardText}>
-              {formatWoundValue(woundValue)}
-            </Text>
-          );
-        case "object":
-          return (
-            <Text style={overviewStyles.cardText}>
-              {formatDate(woundValue)}
-            </Text>
-          );
-        default:
-          return <Text style={overviewStyles.cardText}>{"-"}</Text>;
-      }
+    switch (typeof woundValue) {
+      case "string":
+        return (
+          <Text style={overviewStyles.cardText}>
+            {formatWoundValue(woundValue)}
+          </Text>
+        );
+      case "object":
+        return (
+          <Text style={overviewStyles.cardText}>
+            {formatDate(woundValue)}
+          </Text>
+        );
+      default:
+        return <Text style={overviewStyles.cardText}>{"-"}</Text>;
     }
   };
 
@@ -312,7 +304,7 @@ export default function WoundScreen({ navigation }) {
   };
 
   const renderWoundInformation = () => {
-    if (loading) {
+    if (loadingWoundInformation) {
       return (
         <ActivityIndicator
           animating={true}
@@ -356,7 +348,7 @@ export default function WoundScreen({ navigation }) {
   };
 
   const renderLatestCaptureInformation = () => {
-    if (loading) {
+    if (loadingWoundCaptureInformation) {
       return (
         <ActivityIndicator
           animating={true}

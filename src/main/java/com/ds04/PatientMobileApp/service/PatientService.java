@@ -3,7 +3,10 @@ package com.ds04.PatientMobileApp.service;
 import com.ds04.PatientMobileApp.entity.Patient;
 import com.ds04.PatientMobileApp.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class PatientService {
@@ -15,53 +18,74 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public String createPatient(Patient patient) {
+    public ResponseEntity createPatient(Patient patient) {
         try {
+
+            // Check uid was provided
+            if(patient.getUid() == null || patient.getUid().isEmpty()) {
+                throw new IllegalArgumentException("uid property is required but was not provided ");
+            }
+
             // Generate a PatientId
-            if(patient.getPatientId() == null){
+            if(patient.getPatientId() == null) {
                 patient.setPatientId();
             }
 
-            return patientRepository.create(patient);
+            return ResponseEntity.status(HttpStatus.OK).body(patientRepository.create(patient));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            return ResponseEntity.internalServerError().body("An exception occurred when creating Patient");
         }
     }
 
-    public Patient getPatient(String patientId){
+    public ResponseEntity getPatientByPatientId(String patientId){
         try {
-            return patientRepository.findById(patientId);
+            return ResponseEntity.status(HttpStatus.OK).body(patientRepository.findByPatientId(patientId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null; // TODO: Implement Exception Handling
+            return ResponseEntity.internalServerError().body("An exception occurred when searching for Patient");
         }
     }
 
-    public Patient getPatientByUserId(String userId){
+    public ResponseEntity getPatientByUserId(String userId){
         try {
-            return patientRepository.findByUserId(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(patientRepository.findByUserId(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null; // TODO: Implement Exception Handling
+            return ResponseEntity.internalServerError().body("An exception occurred when searching for Patient");
         }
     }
 
-    public String updatePatient(String patientId, Patient update){
+    public ResponseEntity updatePatient(String patientId, Patient update){
         try {
-            return patientRepository.update(patientId, update);
+            if (patientId == null || patientId.isEmpty()) {
+                throw new IllegalArgumentException("patientId property must be provided");
+            } else if (update.getUid() == null) {
+                throw new IllegalArgumentException("uid property must be provided"); // Check uid was provided - this cannot be overwritten
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(patientRepository.update(patientId, update));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return null; // TODO: Implement Exception Handling
+            return ResponseEntity.internalServerError().body("An exception occurred when updating Patient");
         }
     }
 
-    public String deletePatient(String patientId){
+    public ResponseEntity<String> deletePatient(String patientId){
         try {
-            return patientRepository.delete(patientId);
+            if (patientId == null || patientId.isEmpty()) {
+                throw new IllegalArgumentException("patientId property must be provided");
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(patientRepository.delete(patientId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return null; // TODO: Implement Exception Handling
+            return ResponseEntity.internalServerError().body("An exception occurred when deleting Patient");
         }
     }
 }

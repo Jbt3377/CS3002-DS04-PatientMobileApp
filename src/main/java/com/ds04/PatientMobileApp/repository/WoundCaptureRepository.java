@@ -47,27 +47,41 @@ public class WoundCaptureRepository {
         return future.get().getUpdateTime().toString();
     }
 
-    public WoundCapture findByWoundId(String woundCaptureId) throws ExecutionException, InterruptedException {
+    public WoundCapture findByWoundCaptureId(String woundCaptureId) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
+        Credentials credentials = db.getOptions().getCredentials();
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+        Bucket bucket = StorageClient.getInstance().bucket();
 
         // Get Document
         ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(woundCaptureId).get();
         DocumentSnapshot document = future.get();
 
         if(!document.exists()){
-            return null;
+            throw new IllegalArgumentException("Could not find Wound Capture with woundCaptureId: " + woundCaptureId);
         }
 
         // Convert to WoundCapture Object
-        return document.toObject(WoundCapture.class);
+        WoundCapture woundCapture = document.toObject(WoundCapture.class);
+        assert woundCapture != null;
+
+        // Retrieve photo & add to WoundCapture
+        byte[] base64Image = storage.readAllBytes(bucket.getName(), woundCapture.getFilename());
+        woundCapture.setBase64Image(base64Image);
+
+        return woundCapture;
     }
 
-    public List<WoundCapture> findByUid(String uid) throws ExecutionException, InterruptedException {
+    public List<WoundCapture> findByUid(String uid) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
 
         // Get documents
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("woundId", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if(documents.isEmpty()){
+            throw new IllegalArgumentException("Could not find Wound Capture with uid: " + uid);
+        }
 
         // Convert documents to WoundCapture objects
         ArrayList<WoundCapture> results = new ArrayList<>();

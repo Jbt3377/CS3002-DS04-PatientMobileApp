@@ -16,6 +16,7 @@ public class FirebaseInitializer {
     @PostConstruct
     public void initialize() {
         try {
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
             FileInputStream serviceAccount = new FileInputStream("./serviceAccountKey.json");
 
             FirebaseOptions options = FirebaseOptions.builder()

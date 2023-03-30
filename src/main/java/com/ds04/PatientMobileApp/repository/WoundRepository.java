@@ -1,7 +1,7 @@
 package com.ds04.PatientMobileApp.repository;
 
+import com.ds04.PatientMobileApp.entity.Patient;
 import com.ds04.PatientMobileApp.entity.Wound;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Repository
@@ -23,7 +22,7 @@ public class WoundRepository {
         return future.get().getUpdateTime().toString();
     }
 
-    public Wound findById(String woundId) throws ExecutionException, InterruptedException {
+    public Wound findWoundByWoundId(String woundId) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<DocumentSnapshot> future = db.collection(COLLECTION_NAME).document(woundId).get();
         DocumentSnapshot document = future.get();
@@ -31,14 +30,18 @@ public class WoundRepository {
         if(document.exists()){
             return document.toObject(Wound.class);
         }else{
-            return null;
+            throw new IllegalArgumentException("Could not find Wound with woundId: " + woundId);
         }
     }
 
-    public List<Wound> findByUid(String uid) throws ExecutionException, InterruptedException {
+    public List<Wound> findWoundsByUid(String uid) throws ExecutionException, InterruptedException, IllegalArgumentException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if(documents.isEmpty()){
+            throw new IllegalArgumentException("Could not find Wound with uid: " + uid);
+        }
 
         ArrayList<Wound> results = new ArrayList<>();
         for (DocumentSnapshot document : documents) {
