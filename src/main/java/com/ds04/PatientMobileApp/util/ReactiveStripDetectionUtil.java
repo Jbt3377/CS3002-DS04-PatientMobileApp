@@ -13,11 +13,13 @@ import java.util.List;
 
 public class ReactiveStripDetectionUtil {
 
-    public static Mat processImage(final Mat mat){
+    private static final int SQUARE_TRIM_WIDTH = 20;
+
+    public static Mat processImage(final Mat image){
 
         // Apply Blurring with Gaussian filter
         Mat blurredImage = new Mat();
-        Imgproc.GaussianBlur(mat, blurredImage, new Size(3, 3), 0);
+        Imgproc.GaussianBlur(image, blurredImage, new Size(3, 3), 0);
 
         Imgcodecs.imwrite("blurredImage.jpg", blurredImage);
 
@@ -38,7 +40,7 @@ public class ReactiveStripDetectionUtil {
         return dilateImage;
     }
 
-    public static List<MatOfPoint> findContoursAndIdentifySquares(final Mat processed, final Mat originalImage) {
+    public static List<MatOfPoint> findContoursAndIdentifySquares(final Mat processed, final Mat image) {
 
         // Find contours
         List<MatOfPoint> allContours = new ArrayList<>();
@@ -102,7 +104,7 @@ public class ReactiveStripDetectionUtil {
 
         // Draw filtered contours on image and save
         Imgproc.drawContours(
-                originalImage,
+                image,
                 squares,
                 -1,
                 new Scalar(0, 255, 0),
@@ -112,11 +114,11 @@ public class ReactiveStripDetectionUtil {
         // Crop image to obtain two largest squares
         for (int i = 0; i < squareCoordinates.size() ; i++) {
             Rect squareRect = squareCoordinates.get(i);
-            Mat square = originalImage.submat(squareRect);
+            Mat square = image.submat(squareRect);
             Imgcodecs.imwrite("square" + (i + 1) + ".jpg", square);
         }
 
-        Imgcodecs.imwrite("identifiedSquares.jpg", originalImage);
+        Imgcodecs.imwrite("identifiedSquares.jpg", image);
 
         // Check two squares detected
         if (squareCoordinates.size() != 2){
@@ -126,7 +128,7 @@ public class ReactiveStripDetectionUtil {
         return squares;
     }
 
-    public static void extractPixelValues(final List<MatOfPoint> identifiedSquares, final Mat originalImage) {
+    public static List<Scalar> extractPixelValues(final List<MatOfPoint> identifiedSquares, final Mat originalImage) {
         // Get squares
         MatOfPoint square1 = identifiedSquares.get(0);
         MatOfPoint square2 = identifiedSquares.get(1);
@@ -147,6 +149,8 @@ public class ReactiveStripDetectionUtil {
             reactiveStrip = square1;
         }
 
+        Imgcodecs.imwrite("originalClonedImage.jpg", originalImage);
+
         // Calculate mean pixel values for both strips
         Scalar meanControlStripColour = calculateMeanPixelColour(controlStrip, "control", originalImage);
 
@@ -157,8 +161,49 @@ public class ReactiveStripDetectionUtil {
 
         System.out.println("Mean Reactive Strip Pixel Value: " + meanReactiveStripColour);
 
-        // Apply to algorithm
-        // TODO Add Algo Code
+        List<Scalar> extractedPixelValues = new ArrayList<>();
+        extractedPixelValues.add(meanControlStripColour);
+        extractedPixelValues.add(meanReactiveStripColour);
+
+        return extractedPixelValues;
+    }
+
+    public static void calculateApparentAbsorbance(List<Scalar> extractedPixelValues) {
+
+        // Get Mean Pixel RGB
+        Scalar meanControlStripColour = extractedPixelValues.get(0);
+        Scalar meanReactiveStripColour = extractedPixelValues.get(1);
+
+        System.out.println("Control Strip Mean R Pixel Value: " + meanControlStripColour.val[2]);
+        System.out.println("Control Strip Mean R Pixel Value: " + meanReactiveStripColour.val[2]);
+
+        // Step 1: Normalize Red Pixel Value (R)
+        double controlRedNormalized = meanControlStripColour.val[2] / 255;
+        double reactiveRedNormalized = meanReactiveStripColour.val[2] / 255;
+
+        // Step 2: Apply Un-Gamma Correction
+        double controlUnGammaCorrected = applyUnGammaCorrection(controlRedNormalized);
+        double reactiveUnGammaCorrected = applyUnGammaCorrection(reactiveRedNormalized);
+
+        // Step 3: Get Corrected R Value
+        double controlCorrectedRValue = controlUnGammaCorrected*255;
+        double reactiveCorrectedRValue = reactiveUnGammaCorrected*255;
+
+        // Step 4: Calculate Apparent Absorbance
+        double controlApparentAbsorbance = Math.log(255.0 / controlCorrectedRValue);
+        double reactiveApparentAbsorbance = Math.log(255.0 / reactiveCorrectedRValue);
+
+    }
+
+    /**
+     * Method applies un-gamma correction
+     */
+    private static double applyUnGammaCorrection(double R){
+        if (R > 0.04045) {
+            return Math.pow((R + 0.055) / 1.055, 2.4);
+        } else {
+            return R / 12.92;
+        }
 
     }
 
@@ -174,10 +219,9 @@ public class ReactiveStripDetectionUtil {
      */
     private static Scalar calculateMeanPixelColour(MatOfPoint square, String squareIdentity, Mat originalImage) {
         Rect rect = Imgproc.boundingRect(square);
-        Mat squareImage = originalImage.submat(rect);
-        Scalar meanColor = Core.mean(squareImage);
-        System.out.println("Mean color in " + squareIdentity + " square: " + meanColor);
-        return meanColor;
+        Rect cropRect = new Rect(rect.x + SQUARE_TRIM_WIDTH, rect.y + SQUARE_TRIM_WIDTH, rect.width - (SQUARE_TRIM_WIDTH*2), rect.height - (SQUARE_TRIM_WIDTH*2));
+        Mat croppedImage = new Mat(originalImage, cropRect);
+        return Core.mean(croppedImage);
     }
 
     /**

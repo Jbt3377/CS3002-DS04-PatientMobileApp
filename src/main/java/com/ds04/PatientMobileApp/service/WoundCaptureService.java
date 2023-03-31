@@ -7,6 +7,7 @@ import com.ds04.PatientMobileApp.util.ReactiveStripDetectionUtil;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,23 +59,27 @@ public class WoundCaptureService {
 
             // Convert Image to Mat
             MatOfByte matOfByte = new MatOfByte(photo.getBytes());
-            Mat originalImage = Imgcodecs.imdecode(matOfByte, Imgcodecs.IMREAD_UNCHANGED);
+            Mat image = Imgcodecs.imdecode(matOfByte, Imgcodecs.IMREAD_UNCHANGED);
+            Mat originalImage = image.clone();
 
             // Process Image
-            Mat processedImage = ReactiveStripDetectionUtil.processImage(originalImage);
+            Mat processedImage = ReactiveStripDetectionUtil.processImage(image);
 
             // Find Contours and identify Regions of Interest
-            List<MatOfPoint> identifiedSquares = ReactiveStripDetectionUtil.findContoursAndIdentifySquares(processedImage, originalImage);
+            List<MatOfPoint> identifiedSquares = ReactiveStripDetectionUtil.findContoursAndIdentifySquares(processedImage, image);
 
             // Encode the image in memory as a JPEG byte array
             MatOfByte encodedImage = new MatOfByte();
-            Imgcodecs.imencode(".jpg", originalImage, encodedImage);
+            Imgcodecs.imencode(".jpg", image, encodedImage);
 
             // Convert MatOfByte to byte array
             byte[] byteArray = encodedImage.toArray();
 
             // Extract Pixel Values
-            ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage);
+            List<Scalar> extractedPixelValues = ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage);
+
+            // Apply Algorithm
+            ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);
 
             return ResponseEntity.status(HttpStatus.OK).build();
 
