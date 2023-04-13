@@ -8,9 +8,7 @@ import com.google.cloud.storage.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +21,13 @@ public class WoundCaptureRepository {
     private static final String CONTENT_TYPE = "image/jpeg";
 
 
-    public String create(WoundCapture woundCapture, byte[] photo) throws ExecutionException, InterruptedException, IOException {
+    public String create(WoundCapture woundCapture, byte[] photo) throws ExecutionException, InterruptedException,
+            IOException {
         Firestore db = FirestoreClient.getFirestore();
         Credentials credentials = db.getOptions().getCredentials();
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         Bucket bucket = StorageClient.getInstance().bucket();
-
-        System.out.println("Entered Repo");
-
+        
         // Generate and set Filename (filename is a composite of uid and WoundCaptureId)
         String filename = woundCapture.getUid() + "_" + woundCapture.getWoundCaptureId();
         woundCapture.setFilename(filename);
@@ -46,7 +43,9 @@ public class WoundCaptureRepository {
         System.out.println("File uploaded successfully!");
 
         // Upload Wound Capture Document
-        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME).document(woundCapture.getWoundCaptureId()).set(woundCapture.convertToMap());
+        ApiFuture<WriteResult> future = db.collection(COLLECTION_NAME)
+                .document(woundCapture.getWoundCaptureId())
+                .set(woundCapture.convertToMap());
         System.out.println("Wound Capture saved successfully!");
 
         return future.get().getUpdateTime().toString();
