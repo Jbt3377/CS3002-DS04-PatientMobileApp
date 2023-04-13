@@ -64,7 +64,8 @@ public class PatientService {
             if (patientId == null || patientId.isEmpty()) {
                 throw new IllegalArgumentException("patientId property must be provided");
             } else if (update.getUid() == null) {
-                throw new IllegalArgumentException("uid property must be provided"); // Check uid was provided - this cannot be overwritten
+                // Check uid was provided - this cannot be overwritten
+                throw new IllegalArgumentException("uid property must be provided");
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(patientRepository.update(patientId, update));

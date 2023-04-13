@@ -78,13 +78,12 @@ public class WoundCaptureService {
             // Extract Pixel Values
             List<Scalar> extractedPixelValues = ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage);
 
-            // Apply Algorithm
-            ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);
+            // Apply Absorbance Parameter Algorithm - disabled as this was a desired feature but not implemented
+//            ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);
+//            return ResponseEntity.status(HttpStatus.OK).build();
 
-            return ResponseEntity.status(HttpStatus.OK).build();
-
-//            System.out.println("Completed Processing");
-//            return ResponseEntity.status(HttpStatus.OK).body(woundCaptureRepository.create(woundCapture, byteArray));
+            System.out.println("Completed Processing");
+            return ResponseEntity.status(HttpStatus.OK).body(woundCaptureRepository.create(woundCapture, byteArray));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
