@@ -80,8 +80,6 @@ public class ReactiveStripDetectionUtil {
                         rect1.tl().y < rect2.br().y &&
                         rect1.br().y > rect2.tl().y;
 
-                System.out.println("Checking overlap");
-
                 // check if the intersection rectangle is valid
                 if (doOverlap) {
                     double area1 = rect1.area();
@@ -109,7 +107,7 @@ public class ReactiveStripDetectionUtil {
                 3
         );
 
-        // Crop image to obtain two largest squares
+        // Save the identified squares (for debugging)
         for (int i = 0; i < squareCoordinates.size() ; i++) {
             Rect squareRect = squareCoordinates.get(i);
             Mat square = image.submat(squareRect);
