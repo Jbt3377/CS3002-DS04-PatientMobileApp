@@ -21,8 +21,6 @@ public class ReactiveStripDetectionUtil {
         Mat blurredImage = new Mat();
         Imgproc.GaussianBlur(image, blurredImage, new Size(3, 3), 0);
 
-        Imgcodecs.imwrite("blurredImage.jpg", blurredImage);
-
         // Convert to Greyscale
         Mat greyImage = new Mat();
         Imgproc.cvtColor(blurredImage, greyImage, Imgproc.COLOR_BGR2GRAY);
