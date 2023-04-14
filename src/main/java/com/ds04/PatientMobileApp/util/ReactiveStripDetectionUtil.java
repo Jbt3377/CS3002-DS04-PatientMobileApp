@@ -145,7 +145,7 @@ public class ReactiveStripDetectionUtil {
             reactiveStrip = square1;
         }
 
-        Imgcodecs.imwrite("originalClonedImage.jpg", originalImage);
+        // Imgcodecs.imwrite("originalClonedImage.jpg", originalImage);
 
         // Calculate mean pixel values for both strips
         Scalar meanControlStripColour = calculateMeanPixelColour(controlStrip, "control", originalImage);
@@ -217,6 +217,9 @@ public class ReactiveStripDetectionUtil {
         Rect rect = Imgproc.boundingRect(square);
         Rect cropRect = new Rect(rect.x + SQUARE_TRIM_WIDTH, rect.y + SQUARE_TRIM_WIDTH, rect.width - (SQUARE_TRIM_WIDTH*2), rect.height - (SQUARE_TRIM_WIDTH*2));
         Mat croppedImage = new Mat(originalImage, cropRect);
+
+        // Used to get results of chemical indicator crop
+        // Imgcodecs.imwrite("croppedSquare" + squareIdentity + ".jpg", croppedImage);
         return Core.mean(croppedImage);
     }
 

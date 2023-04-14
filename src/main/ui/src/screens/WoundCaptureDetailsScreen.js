@@ -1,7 +1,7 @@
 import { ActivityIndicator, Card } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { formatDate, formatTime } from "../actions/SharedFunctions";
+import { formatDate, formatTime } from "../util/SharedFunctions";
 
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import WoundCapture from "../models/WoundCapture";

@@ -23,7 +23,7 @@ public class PatientService {
 
             // Check uid was provided
             if(patient.getUid() == null || patient.getUid().isEmpty()) {
-                throw new IllegalArgumentException("uid property is required but was not provided ");
+                throw new IllegalArgumentException("uid property is required but was not provided");
             }
 
             // Generate a PatientId

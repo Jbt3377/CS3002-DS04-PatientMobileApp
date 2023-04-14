@@ -2,7 +2,7 @@ import {
   isDateOrBoolPropValid,
   isMultiSelectPropValid,
   isStringValid,
-} from "../actions/ValidationFunctions";
+} from "../util/ValidationFunctions";
 
 import { useState } from "react";
 

@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { formatDate, formatTime } from "../actions/SharedFunctions";
+import { formatDate, formatTime } from "../util/SharedFunctions";
 
 import DatePicker from "../components/DatePicker";
 import DialogWithCheckboxes from "../components/DialogWithCheckboxes";

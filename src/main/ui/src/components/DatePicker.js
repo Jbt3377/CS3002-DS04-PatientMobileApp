@@ -4,7 +4,7 @@ import { SafeAreaView, TextInput } from "react-native-paper";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FeatherIcon from "react-native-vector-icons/Feather";
-import { formatDate } from "../actions/SharedFunctions";
+import { formatDate } from "../util/SharedFunctions";
 
 const globalStyle = require("../../Style");
 

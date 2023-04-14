@@ -13,7 +13,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import { auth } from "../../Firebase";
-import { formatDate } from "../actions/SharedFunctions";
+import { formatDate } from "../util/SharedFunctions";
 
 const globalStyle = require("../../Style");
 

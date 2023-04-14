@@ -19,6 +19,7 @@ import {
 import { REACT_APP_LOCAL_BACKEND_BASE_URL } from "@env";
 import { TextInput } from "react-native-paper";
 import { auth } from "../../Firebase";
+import { isValidPassword } from "../util/ValidationFunctions";
 
 const globalStyle = require("../../Style");
 
@@ -45,6 +46,12 @@ export default function LoginScreen({ navigation }) {
    * Method that performs User Sign Up action
    */
   const handleSignUp = async () => {
+
+    if (isValidPassword(password)){
+      alert("Password is invalid. Must have at least 8 characters, an uppercase, a lowercase, a number, and special character");
+      return;
+    }
+    
     if (password !== confirmPassword) {
       alert("Password's do not match");
       return;

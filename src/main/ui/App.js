@@ -11,7 +11,6 @@ import WoundCaptureScreen from "./src/screens/WoundCaptureScreen";
 import WoundScreen from "./src/screens/WoundScreen";
 import WoundSelectScreen from "./src/screens/WoundSelectScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useTheme } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 
