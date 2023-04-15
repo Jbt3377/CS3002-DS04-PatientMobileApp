@@ -31,7 +31,7 @@ public class WoundCaptureController {
 
     @GetMapping("/findWoundCapturesByUser/{uid}")
     public ResponseEntity findWoundCapturesByUser(@PathVariable String uid) {
-        return woundCaptureService.findWoundCapturesByUser(uid);
+        return woundCaptureService.findWoundCapturesByUserId(uid);
     }
 
 }

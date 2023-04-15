@@ -1,8 +1,8 @@
 package com.ds04.PatientMobileApp.service;
 
 import com.ds04.PatientMobileApp.entity.WoundCapture;
-import com.ds04.PatientMobileApp.exceptions.UnprocessableImageException;
 import com.ds04.PatientMobileApp.repository.WoundCaptureRepository;
+import com.ds04.PatientMobileApp.util.CommonUtil;
 import com.ds04.PatientMobileApp.util.ReactiveStripDetectionUtil;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -15,12 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -79,36 +73,49 @@ public class WoundCaptureService {
             List<Scalar> extractedPixelValues = ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage);
 
             // Apply Absorbance Parameter Algorithm - disabled as this was a desired feature but not implemented
-//            ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);
-//            return ResponseEntity.status(HttpStatus.OK).build();
+            // ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);
+            // return ResponseEntity.status(HttpStatus.OK).build();
 
             System.out.println("Completed Processing");
-            return ResponseEntity.status(HttpStatus.OK).body(woundCaptureRepository.create(woundCapture, byteArray));
+            return CommonUtil.buildResponseEntity(woundCaptureRepository.create(woundCapture, byteArray), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("An exception occurred when creating Wound Capture");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when creating Wound Capture",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
     public ResponseEntity getWoundCapture(String woundCaptureId){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(woundCaptureRepository.findByWoundCaptureId(woundCaptureId));
+            return CommonUtil.buildResponseEntity(
+                    woundCaptureRepository.findByWoundCaptureId(woundCaptureId).convertToJson(),
+                    HttpStatus.OK
+            );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when searching for Wound Capture");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when searching for Wound Capture",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
-    public ResponseEntity findWoundCapturesByUser(String uid){
+    public ResponseEntity findWoundCapturesByUserId(String uid){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(woundCaptureRepository.findByUid(uid));
+            return CommonUtil.buildResponseEntity(
+                    CommonUtil.convertListOfWoundCapturesToJson(woundCaptureRepository.findByUid(uid)),
+                    HttpStatus.OK
+            );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when searching for Wound Capture");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when searching for Wound Captures",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

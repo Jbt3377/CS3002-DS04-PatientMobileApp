@@ -2,6 +2,7 @@ package com.ds04.PatientMobileApp.service;
 
 import com.ds04.PatientMobileApp.entity.Wound;
 import com.ds04.PatientMobileApp.repository.WoundRepository;
+import com.ds04.PatientMobileApp.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,38 +24,48 @@ public class WoundService {
         try {
             // Check uid was provided
             if(newWound.getUid() == null || newWound.getUid().isEmpty()) {
-                throw new IllegalArgumentException("uid property is required but was not provided ");
+                throw new IllegalArgumentException("uid property is required but was not provided");
             }
 
             if(newWound.getWoundId() == null){
                 newWound.setWoundId();
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(woundRepository.create(newWound));
+            return CommonUtil.buildResponseEntity(woundRepository.create(newWound), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when creating Wound");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when creating Wound",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     public ResponseEntity findWoundByWoundId(String woundId){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(woundRepository.findWoundByWoundId(woundId));
+            return CommonUtil.buildResponseEntity(woundRepository.findWoundByWoundId(woundId).convertToJson(), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when searching for Wound");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when searching for Wound",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     public ResponseEntity findWoundsByUid(String uid){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(woundRepository.findWoundsByUid(uid));
+            List<Wound> results = woundRepository.findWoundsByUid(uid);
+            return CommonUtil.buildResponseEntity(CommonUtil.convertListOfWoundsToJson(results), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when searching for Wounds");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when searching for Wounds",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -66,11 +77,17 @@ public class WoundService {
                 throw new IllegalArgumentException("uid property must be provided"); // Check uid was provided - this cannot be overwritten
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(woundRepository.update(woundId, update));
+            return CommonUtil.buildResponseEntity(
+                    woundRepository.update(woundId, update),
+                    HttpStatus.OK
+            );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when update Wound");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when updating Wound",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -80,11 +97,17 @@ public class WoundService {
                 throw new IllegalArgumentException("woundId property must be provided");
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(woundRepository.delete(woundId));
+            return CommonUtil.buildResponseEntity(
+                    woundRepository.delete(woundId),
+                    HttpStatus.OK
+            );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return CommonUtil.buildResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An exception occurred when deleting Wound");
+            return CommonUtil.buildResponseEntity(
+                    "An exception occurred when deleting Wound",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

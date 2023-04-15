@@ -1,5 +1,8 @@
 package com.ds04.PatientMobileApp.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.cloud.firestore.annotation.DocumentId;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -154,5 +157,11 @@ public class Wound {
         docData.put("injuryDrugOrAlcoholInvolvement", this.injuryDrugOrAlcoholInvolvement);
         docData.put("assaultLocationDescription", this.assaultLocationDescription);
         return docData;
+    }
+
+    public String convertToJson() throws JsonProcessingException {
+        ObjectMapper ow = new ObjectMapper();
+        ow.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return ow.writeValueAsString(this);
     }
 }

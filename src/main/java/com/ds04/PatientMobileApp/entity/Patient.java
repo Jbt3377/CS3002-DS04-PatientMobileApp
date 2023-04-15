@@ -1,5 +1,8 @@
 package com.ds04.PatientMobileApp.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.cloud.firestore.annotation.DocumentId;
 
 import java.util.Date;
@@ -83,6 +86,12 @@ public class Patient {
         docData.put("gender", this.gender);
         docData.put("homeAddress", this.homeAddress);
         return docData;
+    }
+
+    public String convertToJson() throws JsonProcessingException {
+        ObjectMapper ow = new ObjectMapper();
+        ow.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return ow.writeValueAsString(this);
     }
 
 }
