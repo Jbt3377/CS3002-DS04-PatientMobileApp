@@ -59,15 +59,16 @@ public class ReactiveStripDetectionUtil {
             boolean isNotNoise = approxCurve.total() == 4 && contourArea > 60000 && contourArea < 800000;
 
             if (isNotNoise) {
-                System.out.println("Contour Area: " + contourArea);
+                // System.out.println("Contour Area: " + contourArea);
                 squares.add(approxMatOfPoint);
                 Rect squareRect = Imgproc.boundingRect(approxMatOfPoint);
                 squareCoordinates.add(squareRect);
             }
         }
 
-        System.out.println("Number of Squares identified: " + squareCoordinates.size());
-        System.out.println("Number of Squares identified (MoP): " + squares.size());
+        // Used for debugging squares identified from contours
+        // System.out.println("Number of Squares identified: " + squareCoordinates.size());
+        // System.out.println("Number of Squares identified (MoP): " + squares.size());
 
         // Nested for loop removes any overlapping Rect objects
         for (int i = 0; i < squareCoordinates.size(); i++) {
@@ -95,8 +96,9 @@ public class ReactiveStripDetectionUtil {
             }
         }
 
-        System.out.println("Number of Squares not overlapping: " + squareCoordinates.size());
-        System.out.println("Number of Squares not overlapping (MoP): " + squares.size());
+        // Used for debugging overlapping squares
+        // System.out.println("Number of Squares not overlapping: " + squareCoordinates.size());
+        // System.out.println("Number of Squares not overlapping (MoP): " + squares.size());
 
         // Draw filtered contours on image and save
         Imgproc.drawContours(
@@ -223,21 +225,25 @@ public class ReactiveStripDetectionUtil {
                 new Point(rect.x + rect.width, rect.y + rect.height),
                 2,
                 3,
-                new Scalar(255, 255, 255),
+                new Scalar(0, 0, 0),
                 2
         );
     }
 
     /**
      * Method calculates a mean pixel colour value within a region of interest
+     * @return Scalar representing mean pixel values in RGB channel order
      */
     private static Scalar calculateMeanPixelColour(MatOfPoint square, String squareIdentity, Mat originalImage) {
         Rect rect = Imgproc.boundingRect(square);
         Rect cropRect = new Rect(rect.x + SQUARE_TRIM_WIDTH, rect.y + SQUARE_TRIM_WIDTH, rect.width - (SQUARE_TRIM_WIDTH*2), rect.height - (SQUARE_TRIM_WIDTH*2));
         Mat croppedImage = new Mat(originalImage, cropRect);
 
+        // Convert from BGR to RGB
+        Imgproc.cvtColor(croppedImage, croppedImage, Imgproc.COLOR_BGR2RGB);
+
         // Used to get results of chemical indicator crop
-         Imgcodecs.imwrite("croppedSquare" + squareIdentity + ".jpg", croppedImage);
+        // Imgcodecs.imwrite("croppedSquare" + squareIdentity + ".jpg", croppedImage);
         return Core.mean(croppedImage);
     }
 
