@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ReactiveStripDetectionUtil {
 
-    private static final int SQUARE_TRIM_WIDTH = 20;
+    private static final int SQUARE_TRIM_WIDTH = 40;
 
     public static Mat processImage(final Mat image){
 
@@ -124,7 +124,7 @@ public class ReactiveStripDetectionUtil {
         return squares;
     }
 
-    public static List<Scalar> extractPixelValues(final List<MatOfPoint> identifiedSquares, final Mat originalImage) {
+    public static List<Scalar> extractPixelValues(final List<MatOfPoint> identifiedSquares, final Mat originalImage, final Mat imageToBeSaved) {
         // Get squares
         MatOfPoint square1 = identifiedSquares.get(0);
         MatOfPoint square2 = identifiedSquares.get(1);
@@ -138,14 +138,16 @@ public class ReactiveStripDetectionUtil {
 
         // Determine control and reactive strip
         if (middleOfSquare1.y > middleOfSquare2.y) {
-            controlStrip = square1;
-            reactiveStrip = square2;
-        } else {
             controlStrip = square2;
             reactiveStrip = square1;
+        } else {
+            controlStrip = square1;
+            reactiveStrip = square2;
         }
 
-        // Imgcodecs.imwrite("originalClonedImage.jpg", originalImage);
+        // Apply identity labels
+        applyChemicalIndicatorLabel(controlStrip, "control", imageToBeSaved);
+        applyChemicalIndicatorLabel(reactiveStrip, "reactive", imageToBeSaved);
 
         // Calculate mean pixel values for both strips
         Scalar meanControlStripColour = calculateMeanPixelColour(controlStrip, "control", originalImage);
@@ -211,6 +213,22 @@ public class ReactiveStripDetectionUtil {
     }
 
     /**
+     * Method adds a provided text label to a provided image
+     */
+    private static void applyChemicalIndicatorLabel(MatOfPoint square, String squareIdentity, Mat imageToBeSaved) {
+        Rect rect = Imgproc.boundingRect(square);
+        Imgproc.putText (
+                imageToBeSaved,
+                squareIdentity,
+                new Point(rect.x + rect.width, rect.y + rect.height),
+                2,
+                3,
+                new Scalar(255, 255, 255),
+                2
+        );
+    }
+
+    /**
      * Method calculates a mean pixel colour value within a region of interest
      */
     private static Scalar calculateMeanPixelColour(MatOfPoint square, String squareIdentity, Mat originalImage) {
@@ -219,7 +237,7 @@ public class ReactiveStripDetectionUtil {
         Mat croppedImage = new Mat(originalImage, cropRect);
 
         // Used to get results of chemical indicator crop
-        // Imgcodecs.imwrite("croppedSquare" + squareIdentity + ".jpg", croppedImage);
+         Imgcodecs.imwrite("croppedSquare" + squareIdentity + ".jpg", croppedImage);
         return Core.mean(croppedImage);
     }
 

@@ -62,15 +62,15 @@ public class WoundCaptureService {
             // Find Contours and identify Regions of Interest
             List<MatOfPoint> identifiedSquares = ReactiveStripDetectionUtil.findContoursAndIdentifySquares(processedImage, image);
 
+            // Extract Pixel Values
+            List<Scalar> extractedPixelValues = ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage, image);
+
             // Encode the image in memory as a JPEG byte array
             MatOfByte encodedImage = new MatOfByte();
             Imgcodecs.imencode(".jpg", image, encodedImage);
 
             // Convert MatOfByte to byte array
             byte[] byteArray = encodedImage.toArray();
-
-            // Extract Pixel Values
-            List<Scalar> extractedPixelValues = ReactiveStripDetectionUtil.extractPixelValues(identifiedSquares, originalImage);
 
             // Apply Absorbance Parameter Algorithm - disabled as this was a desired feature but not implemented
             // ReactiveStripDetectionUtil.calculateApparentAbsorbance(extractedPixelValues);

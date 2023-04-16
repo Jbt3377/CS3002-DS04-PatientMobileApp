@@ -193,7 +193,7 @@ export default function WoundScreen({ navigation }) {
           <TouchableOpacity
             style={trackingStyles.captureWoundBtn}
             onPress={() =>
-              navigation.navigate("WoundCaptureScreen", { woundId: woundId })
+              navigation.navigate("WoundCaptureScreen", { woundId: wound.woundId })
             }
           >
             <SafeAreaView style={trackingStyles.captureWoundBtnContent}>

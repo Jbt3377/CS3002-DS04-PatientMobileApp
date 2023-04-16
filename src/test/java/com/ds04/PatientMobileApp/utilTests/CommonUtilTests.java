@@ -1,15 +1,10 @@
 package com.ds04.PatientMobileApp.utilTests;
 
-import com.ds04.PatientMobileApp.entity.Wound;
 import com.ds04.PatientMobileApp.util.CommonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
