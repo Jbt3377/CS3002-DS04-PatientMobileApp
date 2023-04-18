@@ -1,0 +1,31 @@
+Meeting 05/01/22
+
+- Progress Update
+	- Expo Frontend Project setup
+		- Running on physical device
+		- Few screens including a simple dashboard
+		- Camera enabled and a few basic functions
+		
+	- Java Backend API setup
+		- Running on localhost
+		- Swagger implemented & in process of fleshing out with models/controller
+		
+	- Data Storage questions
+		- Had wanted Azure but cant obtain a subscription. Possible with student?
+		- Better to use a standard SQL database?
+			- Easier for local development & to get setup
+			- Images are relatively small binary objects to be storing. Unsure post image processing.
+			
+	- Jira Project Setup
+		- Working off 1-2 week sprints
+		- Backlog being added to
+		- Can invite you to it
+		
+- Demo
+	- Planned date? Ideally Friday.    (Thurs earliest!)
+	- Goal for demo?
+		- Have three components hooked up and communicating
+		- Register wound, add details, save/delete.
+		- Camera enabled but not image processing yet? Is that okay?
+		
+		- If need more. Account/Login?

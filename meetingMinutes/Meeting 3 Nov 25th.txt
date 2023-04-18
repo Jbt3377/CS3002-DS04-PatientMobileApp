@@ -1,0 +1,10 @@
+Meeting 3
+
+Initial Project Plan still in progress. Can I send to you on Monday/Tuesday?
+Schedule next meeting to run over
+
+Looked into using Figma to prototype screen flow
+Trello to track Sprint progress - start sprint this week?
+Setup GitLab repo
+
+Requirements better in text or maybe as user stories?

@@ -1,0 +1,20 @@
+
+Talk about diss update - progress - tests
+
+Research paper & spreadsheet
+	- Can follow equation up until "R= (A’0 -A’)/(A’- A∞’)"
+	- Tried to understand from paper but not sure how to get A0 and Amax
+	
+	- Have performed the run through manually and got expected results like in the spreadsheet
+	
+
+Can I send a full first draft Monday/Tuesday next week?
+
+
+
+decouple areas so if they adapt and evolve
+mocked may change? how do this? what will still work? change?
+
+design patterns?
+highlight
+

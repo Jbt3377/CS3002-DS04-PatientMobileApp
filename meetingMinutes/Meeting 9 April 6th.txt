@@ -1,0 +1,27 @@
+Notes from Darryl
+
+Differentiate 1st and 2:1 is that the person has justified everything about the project...
+
+	- If theres a clear way of doing it, theyve explained why its the best option (and cited it if relevant?)
+	- If its sub-optimal, explain why you went with this approach. Was it because of the limited time of the project? limited resources? compatability issues?
+	- If its personal choice, explain that its something YOU wish to gain experience with, desire to learn etc
+	
+Testing stuff manually is equally valid as automated testing
+
+	- Perfectly fine to test endpoints in Postman and visually confirm a 200/400 response/error message included in response
+	- Again, justify by saying limited time or more reasonable to test manually
+	- If its something like passing an image through a model or running image processing/analysis, again manual testing probably makes more sense. Talk about a potential to automate?
+
+Focus on testing stuff that is subject to change
+
+	- Identify components of your project that are likely to change/adapt/evolve overtime in future
+	- Areas of the project may be decoupled. Its good to design that way, so that if the project gets developed for another year and something needs to change, only one part of the system
+		needs to be updated. The rest of the project should stand okay on its own.
+	- Dont need to test stuff exhaustively, just test what makes sense & requires testing
+	
+	
+Talk about design patterns
+
+	- Any pattern used? Controller/Service/Repo for example
+	- Image processing/pre processing done in a different class?
+	- Front end components in separate file?

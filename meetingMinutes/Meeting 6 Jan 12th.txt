@@ -1,0 +1,37 @@
+Interim Demo Talking Points
+
+So far development has focused on setting up the Mobile App and Backend Service
+
+== Mobile App ==
+
+Using Expo, an open source framework for React Native
+
+	- React Native doesnt support HTML or CSS
+	- Instead of using the DOM (Document Object Model), React Native uses components. E.g. SafeView, instead of div
+	- Expo provides a suite of well-tested React Native modules that run on Android, iOS, and the web
+	- Also provides a suite of tools for building, deploying, and updating your app.
+	
+Main workflow for development is;
+	
+	- Code written in React Native
+	- ExpoCLI 'npm start' command
+	- Generates QR Code which can be scanned using the Expo Go App
+	- My application is then bundled and installed on my physical device
+	
+Development focus on the frontend so far has been on getting the camera enabled
+
+Users can allow permissions, take photos with either side of the camera and retake on request
+
+
+== Backend App ==
+
+REST API to contain business logic and interact with Cloud Firestore Database
+
+Firestore initializer reads keys from config file and makes a connection to the project
+
+Inside repository class;
+	- Database state can be fetched from Firestore Client
+	- A future task is an interface for querying the datastore
+	- The following line executes the query
+	
+Swagger page added for easier development and manual testing

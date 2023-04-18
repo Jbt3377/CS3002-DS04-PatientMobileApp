@@ -1,0 +1,12 @@
+Meeting #2
+
+How many epics?
+How many sprints?
+
+Story Points
+Need User Stroies in writing?
+
+= Technology
+React Native
+C# .NET
+Unsure on Architecture yet

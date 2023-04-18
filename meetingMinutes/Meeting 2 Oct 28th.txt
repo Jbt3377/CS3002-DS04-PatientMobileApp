@@ -1,0 +1,46 @@
+detect white recangle
+OpenCV - detection of white boxes and shapes
+QR Code Detection Libraries
+
+
+doctor sends link -> download app -> doctor provides bandages -> register a wound (lower left leg) -> 
+
+Need way to identify which would
+QR code
+Numbers (batch and bandage number)  (Digit Recognition)
+
+Changes in colour plotted on doctors computer
+Push Notification every 12 hours
+
+Make decisions based off what is best for you
+	Justify choices you made
+	Perfectly valid to say "i have experience" or "I want to gain experience"
+
+
+== Doctors Side ==
+
+Dashboard
+Patient not taking photos on time
+Graph of co2 levels (flat)
+See images of patients
+Push notification/message to patient
+
+
+== Patients ==
+Old
+Subtitles - Hearing Difficulty
+Audio Feedback - Partially Sighted User
+
+
+
+Reuirements
+Unwarp/Rectify Image
+Crop out reactive and non-reactive strip
+Calculation colour difference between strips
+
+
+Write up a product backlog (epics) "As a user I can do.."
+(has value / has risk)
+research about technology choice
+keep notes about all decision making
+ n

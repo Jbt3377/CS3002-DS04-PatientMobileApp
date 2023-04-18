@@ -1,0 +1,33 @@
+General
+- Numbering level 3
+- Add table of contents
+- update page count
+
+Section 6
+- talk about unforseen issues
+- in particular.... robust detection of ROIs
+
+Wireframes
+- how did you conceptualize? (whiteboard)
+- Talk about how realized, refinements/changes
+
+UI
+- number of colours on screen selected for reason
+- size of fonts
+- one place for all screen styles
+
+Demo
+- treat as job interview
+- why proj exists
+- prev research
+- talk through happy path
+- then go back and show edge cases
+
+- Potential Q's
+	- Hardest thing to do? (def the image proc)
+	- technically difficult
+	- what decisions would you do differently
+	- What will you do next... (next backlog item)
+	
+pick out something not run of the mill
+
