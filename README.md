@@ -1,6 +1,7 @@
 # CS3002-DS04-PatientMobileApp
 
 ## Description
+
 This repository contains code which was developed in part of the **Mobile App for Colourimetric Analysis of Smart Wound Dressings for Patients** project.
 
 Project consists of a mobile application allowing Patients to sign-up, record information about chronic wounds, and track the status of their wounds by recording captures of their wound dressings.
@@ -11,7 +12,6 @@ Mobile app communicates with a backend web service which handles creating, readi
 Backend service communicates with a NoSQL Firebase database which stores patient information, and handles storage of images and authentication of users.
 
 ## Repo Structure
-
 
 This repo contains the mobile application, backend web service, mock wound dressings and meeting minutes
 
