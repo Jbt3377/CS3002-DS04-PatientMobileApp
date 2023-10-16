@@ -12,13 +12,13 @@ import { initializeApp } from "firebase/app";
 // Add Firebase config values
 // DO NOT COMMIT THIS
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
-  measurementId: "",
+  apiKey: "AIzaSyDco1m2MEc8cNjwnX_FZm1A6wI1EXEIbr0",
+  authDomain: "ds04-7d54b.firebaseapp.com",
+  projectId: "ds04-7d54b",
+  storageBucket: "ds04-7d54b.appspot.com",
+  messagingSenderId: "300964238925",
+  appId: "1:300964238925:web:26a8236471f06ac3012e04",
+  measurementId: "G-3FGSP3MDTF",
 };
 
 // Initialize Firebase

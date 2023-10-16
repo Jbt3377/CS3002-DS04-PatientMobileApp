@@ -394,7 +394,7 @@ export default function WoundScreen({ navigation }) {
           {renderLatestCaptureInformation()}
           <TouchableOpacity
             style={overviewStyles.seeLatestWoundCaptureBtn}
-            disabled={isButtonDisabled}
+            disabled={isButtonDisabled || (woundCaptures == null)}
             onPress={() =>
               navigation.navigate("WoundCaptureDetailsScreen", {
                 woundCaptureId: woundCaptures[0].woundCaptureId,

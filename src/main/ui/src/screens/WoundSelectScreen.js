@@ -34,6 +34,13 @@ export default function WoundSelectScreen({ navigation }) {
           },
         }
       );
+
+      console.log(JSON.stringify(response));
+
+      if (response.status == 404) {
+        throw new Error(response.message);
+      }
+
       const json = await response.json();
       setWounds(json);
       setLoading(false);
